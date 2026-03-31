@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morph Background</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Century Gothic', sans-serif;
+      background-color: #4499FF;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    /* FULL SCREEN MORPH LAYER */
+    .bg {
+      position: fixed;
+      inset: 0;
+      background-color: #0023BE;
+      transform: scale(0);
+      transform-origin: center;
+      transition: transform 0.7s ease;
+      z-index: 0;
+    }
+
+    .bg.active {
+      transform: scale(1);
+    }
+
+    /* TEXT */
+    .text {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      color: white;
+      font-size: 2rem;
+      opacity: 0;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      z-index: 1;
+    }
+
+    .text.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg" id="bg"></div>
+  <div class="text" id="text">Welcome 👋</div>
+
+  <script>
+    let toggled = false;
+    const bg = document.getElementById('bg');
+    const text = document.getElementById('text');
+
+    document.body.addEventListener('click', () => {
+      toggled = !toggled;
+
+      if (toggled) {
+        bg.classList.add('active');
+        text.classList.add('show');
+      } else {
+        bg.classList.remove('active');
+        text.classList.remove('show');
+      }
+    });
+  </script>
+
+</body>
+</html>
