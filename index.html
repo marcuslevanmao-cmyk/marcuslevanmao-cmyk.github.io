@@ -12,12 +12,17 @@
       align-items: center;
       justify-content: center;
       font-family: 'Century Gothic', sans-serif;
-      background-image: url("https://static.vecteezy.com/system/resources/thumbnails/024/618/122/small/elegant-chapel-with-altar-pew-and-chandelier-illuminated-by-electric-lamp-generated-by-ai-free-photo.jpg");
       cursor: pointer;
       overflow: hidden;
+
+      /* STARTING IMAGE */
+      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/024/618/122/small/elegant-chapel-with-altar-pew-and-chandelier-illuminated-by-electric-lamp-generated-by-ai-free-photo.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
     }
 
-    /* FULL SCREEN MORPH LAYER */
+    /* COLOR MORPH LAYER (comes IN on click) */
     .bg {
       position: fixed;
       inset: 0;
@@ -54,7 +59,7 @@
 <body>
 
   <div class="bg" id="bg"></div>
-  <div class="text" id="text">Internal thoughts</div>
+  <div class="text" id="text">Welcome 👋</div>
 
   <script>
     let toggled = false;
