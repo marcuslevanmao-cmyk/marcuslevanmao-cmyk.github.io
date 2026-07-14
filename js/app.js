@@ -1,13 +1,11 @@
 /**
- * app.js — Core initialization bus.
- * Anchors operations and maps shared action events across modules smoothly.
+ * app.js — Main Initialization Engine
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Viewports
   EditorEngine.initFirstPage();
   CommentsEngine.bindSelectionListener();
 
-  // Toolbar Operations Map
+  // Connect formatting toolbar controls
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
@@ -20,19 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Structural Sidebars Events Mapping
+  // Wire Comment Icon action trigger
   const commentBtn = document.getElementById('toolbar-comment-btn');
   if (commentBtn) {
     commentBtn.addEventListener('click', () => CommentsEngine.promptForCommentOnSelection());
   }
 
+  // Sidebar utility toggle hooks
   const outlineBackBtn = document.getElementById('tabs-back-btn');
   const outlineSidebar = document.getElementById('tabs-sidebar');
   if (outlineBackBtn && outlineSidebar) {
     outlineBackBtn.addEventListener('click', () => outlineSidebar.style.display = 'none');
   }
 
-  // Version History Screen Toggle Controls
+  // Full Overlay Version History layout controls
   const historyBtn = document.getElementById('history-btn');
   const vhOverlay = document.getElementById('version-history-view');
   const vhBackBtn = document.getElementById('vh-back-btn');
@@ -55,6 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     vhBackBtn.addEventListener('click', () => vhOverlay.hidden = true);
   }
 
-  // Initial State Snapshot Lifecycle capture
+  // Initial State capture tracking run
   HistoryEngine.captureSnapshot('Document launched');
 });
