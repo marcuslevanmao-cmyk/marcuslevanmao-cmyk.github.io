@@ -271,3 +271,32 @@ html, body {
   border-top: 1px solid #e0e0e0;
   margin-top: auto;
 }
+.comments-sidebar {
+    position: absolute;
+    right: 0;
+    top: 60px; /* Adjust based on your header height */
+    width: 300px;
+    height: calc(100% - 60px);
+    background: white;
+    border-left: 1px solid #dadce0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.cs-header { padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+.cs-header h3 { font-size: 18px; margin: 0; }
+.cs-tabs { display: flex; border-bottom: 1px solid #dadce0; padding: 0 16px; }
+.cs-tab { padding: 10px 16px; cursor: pointer; font-size: 14px; }
+.cs-tab.active { border-bottom: 2px solid #1a73e8; color: #1a73e8; font-weight: 500; }
+
+.cs-search { padding: 16px; }
+.cs-search input { width: 100%; padding: 8px; border: 1px solid #dadce0; border-radius: 4px; }
+.cs-filters { display: flex; gap: 8px; margin-top: 10px; }
+.filter-btn { background: #f1f3f4; border: none; padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer; }
+
+.cs-content { flex-grow: 1; display: flex; justify-content: center; align-items: center; text-align: center; color: #5f6368; }
+.cs-empty-state { width: 80%; }
+.btn-primary { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: 500; }
+
+.cs-footer { padding: 16px; font-size: 11px; color: #70757a; border-top: 1px solid #dadce0; }
