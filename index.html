@@ -12,50 +12,70 @@
 
 <div class="app-shell" id="app-shell">
 
-<header class="app-header">
-  <div class="header-top">
-    <div class="doc-icon" aria-hidden="true">
-      <svg width="26" height="34" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 0H3a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2V9L17 0z" fill="#4285F4"/>
-        <path d="M17 0v7a2 2 0 0 0 2 2h8L17 0z" fill="#A0C3FF"/>
-        <rect x="6" y="16" width="14" height="1.6" fill="#fff"/>
-        <rect x="6" y="20" width="14" height="1.6" fill="#fff"/>
-        <rect x="6" y="24" width="14" height="1.6" fill="#fff"/>
-        <rect x="6" y="28" width="9" height="1.6" fill="#fff"/>
-      </svg>
-    </div>
-    <div class="title-block">
-      <div class="title-row">
-        <input type="text" class="doc-title" value="The Utility of Gods" aria-label="Document Title">
-        <button class="star-btn" title="Star document" aria-label="Star document">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </button>
+  <header class="app-header">
+    <div class="header-top">
+      <div class="doc-icon" aria-hidden="true">
+        <svg width="26" height="34" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 0H3a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2V9L17 0z" fill="#4285F4"/>
+          <path d="M17 0v7a2 2 0 0 0 2 2h8L17 0z" fill="#A0C3FF"/>
+          <rect x="6" y="16" width="14" height="1.6" fill="#fff"/>
+          <rect x="6" y="20" width="14" height="1.6" fill="#fff"/>
+          <rect x="6" y="24" width="14" height="1.6" fill="#fff"/>
+          <rect x="6" y="28" width="9" height="1.6" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="title-block">
+        <div class="title-row">
+          <input type="text" class="doc-title" value="The Utility of Gods" aria-label="Document Title">
+          <button class="star-btn" title="Star document" aria-label="Star document">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </button>
+        </div>
+        <div class="menu-bar">
+          <button type="button" class="menu-item">File</button>
+          <button type="button" class="menu-item">Edit</button>
+          <button type="button" class="menu-item">View</button>
+          <button type="button" class="menu-item">Insert</button>
+          <button type="button" class="menu-item">Format</button>
+          <button type="button" class="menu-item">Tools</button>
+          <button type="button" id="history-open-btn" class="menu-item highlight-history">Version History (Ctrl+H)</button>
+        </div>
       </div>
     </div>
+
+    <div class="toolbar">
+      <button class="toolbar-btn" data-action="undo" title="Undo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg></button>
+      <button class="toolbar-btn" data-action="redo" title="Redo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg></button>
+      <button class="toolbar-btn" data-action="print" title="Print"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg></button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" data-action="comment" title="Add Comment"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+  </header>
+
+  <div class="workspace-wrapper">
+    
+    <aside class="tabs-sidebar" id="tabs-sidebar">
+      <button class="tab-btn active" data-tab="essay">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        The Utility of Gods
+      </button>
+      <button class="tab-btn" data-tab="brainstorm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Brainstorm Material
+      </button>
+    </aside>
+
+    <main class="doc-canvas" id="doc-canvas"></main>
+
+    <aside class="side-panel" id="side-panel" hidden>
+      <div class="comments-panel" id="comments-panel"></div>
+    </aside>
   </div>
-</header>
-
-<div class="workspace-wrapper">
-  
-  <aside class="tabs-sidebar" id="tabs-sidebar">
-    <button class="tab-btn active" data-tab="essay">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-      The Utility of Gods
-    </button>
-    <button class="tab-btn" data-tab="brainstorm">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-      Brainstorm
-    </button>
-  </aside>
-
-  <main class="doc-canvas" id="doc-canvas"></main>
-</div>
-
 </div>
 
 <div class="version-history-view" id="version-history-view" hidden>
   <div class="vh-header">
-    <button class="vh-back-btn" id="vh-back-btn" title="Exit history track workspace">
+    <button class="vh-back-btn" id="vh-back-btn" title="Exit history view tracking mode">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     </button>
     <span class="vh-title" id="vh-title-date">Today</span>
