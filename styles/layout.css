@@ -33,7 +33,7 @@ html, body {
   flex-direction: column;
 }
 
-/* ---------- App Shell Layout Structure ---------- */
+/* ---------- App shell / header ---------- */
 .app-header {
   flex: 0 0 auto;
   background: var(--header-bg);
@@ -48,21 +48,19 @@ html, body {
   position: relative;
 }
 
-/* Tab Navigation Sidebar Container */
+/* Document tabs sidebar */
 .tabs-sidebar {
   flex: 0 0 var(--tabs-width);
   width: var(--tabs-width);
-  background: #ffffff;
+  background: var(--canvas-bg);
   border-right: 1px solid var(--border-subtle);
-  padding: 16px 12px;
+  padding: 12px 12px 0;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  position: relative;
 }
 .tabs-sidebar[hidden] { display: none; }
 
-/* Central Document Canvas Scroll Viewport */
+/* Center Column: independently scrolling document canvas */
 .doc-canvas {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -74,7 +72,7 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Right Comments Stream Sidebar Panel */
+/* Right Column */
 .side-panel {
   flex: 0 0 auto;
   overflow-y: auto;
@@ -85,11 +83,11 @@ html, body {
   .tabs-sidebar { display: none; }
 }
 
-/* ---------- Fullscreen Version History Modal Overlay ---------- */
+/* ---------- Version history full-screen overlay ---------- */
 .version-history-view {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: 1000;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -117,20 +115,21 @@ html, body {
   overflow-y: auto;
 }
 
-/* ---------- Historical Ink Simulation Styling Rules ---------- */
+/* Dynamic simulation style overrides for historical testing */
 .handwritten-draft {
   font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive !important;
-  color: #1a3aa3 !important;
+  color: #1c3aa9 !important;
   line-height: 1.6 !important;
 }
+
 .handwritten-draft del {
-  color: #c5221f !important;
+  color: #d93025 !important;
   text-decoration: line-through;
-  font-weight: bold;
+  opacity: 0.7;
 }
+
 .handwritten-draft ins {
   color: #137333 !important;
   text-decoration: none;
   background-color: #e6f4ea;
-  border-bottom: 1px dashed #137333;
 }
