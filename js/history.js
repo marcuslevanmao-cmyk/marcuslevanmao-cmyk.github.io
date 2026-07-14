@@ -1,94 +1,160 @@
 /**
- * history.js — Timeline State Engine
+ * history.js — The State Timeline Engine
  */
 const HistoryEngine = (() => {
-  const snapshots = [];
-  let debounceTimer = null;
-  let selectedPreviewIndex = -1;
+  let currentVersionIndex = -1;
+  const versionHistory = []; // [{ timestamp: Date, content: string[], label: string, isHandwritten: boolean }]
+
+  let snapshotTimer = null;
+  const SNAPSHOT_DEBOUNCE_MS = 4000;
+
+  function readPagesContent() {
+    const pages = document.querySelectorAll('.doc-page');
+    return Array.from(pages).map((p) => p.innerHTML);
+  }
+
+  function captureSnapshot(label, customDate = null, isHandwritten = false) {
+    const content = readPagesContent();
+    const last = versionHistory[versionHistory.length - 1];
+    if (last && JSON.stringify(last.content) === JSON.stringify(content)) {
+      return;
+    }
+
+    versionHistory.push({
+      timestamp: customDate || new Date(),
+      content,
+      label: label || `${content.length} page${content.length === 1 ? '' : 's'}`,
+      isHandwritten: isHandwritten
+    });
+    currentVersionIndex = versionHistory.length - 1;
+    renderVersionList();
+  }
+
+  function forcePushCustomSnapshot(snapshotObj) {
+    versionHistory.push(snapshotObj);
+    versionHistory.sort((a, b) => a.timestamp - b.timestamp);
+    currentVersionIndex = versionHistory.length - 1;
+    renderVersionList();
+  }
 
   function scheduleSnapshot(label) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
+    clearTimeout(snapshotTimer);
+    snapshotTimer = setTimeout(() => {
       captureSnapshot(label);
-    }, 2000);
+    }, SNAPSHOT_DEBOUNCE_MS);
   }
 
-  function captureSnapshot(label) {
-    const activePage = document.querySelector('.doc-page');
-    if (!activePage) return;
+  function rollbackToVersion(index) {
+    const version = versionHistory[index];
+    if (!version) return;
+    currentVersionIndex = index;
     
-    const pageHtml = activePage.innerHTML;
-    const lastSnap = snapshots[snapshots.length - 1];
+    // Restore content cleanly to modern dynamic pages
+    const canvas = document.getElementById('doc-canvas');
+    canvas.innerHTML = '';
     
-    if (lastSnap && lastSnap.content[0] === pageHtml) return;
-
-    snapshots.push({
-      timestamp: new Date(),
-      label: label || `Edit Revision Log #${snapshots.length + 1}`,
-      content: [pageHtml]
+    version.content.forEach((html, i) => {
+      const page = document.createElement('div');
+      page.className = 'doc-page';
+      page.contentEditable = 'true';
+      page.setAttribute('spellcheck', 'true');
+      page.innerHTML = html;
+      
+      // If the restored history element was a handwritten draft, match style constraints
+      if (version.isHandwritten) {
+        page.classList.add('handwritten-draft');
+      }
+      
+      if (typeof EditorEngine !== 'undefined') {
+        EditorEngine.attachPageListeners(page);
+      }
+      canvas.appendChild(page);
+      
+      const num = document.createElement('div');
+      num.className = 'page-number';
+      num.textContent = `${i + 1}`;
+      canvas.appendChild(num);
     });
-    renderTimelineItems();
+    
+    renderVersionList();
   }
 
-  function renderTimelineItems() {
+  function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function formatDateLabel(date) {
+    return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function renderVersionList() {
     const list = document.getElementById('version-list');
     if (!list) return;
     list.innerHTML = '';
 
-    snapshots.forEach((snap, idx) => {
+    if (versionHistory.length === 0) return;
+
+    let lastGroupLabel = '';
+
+    versionHistory.asReversed().forEach((v) => {
+      const originalIndex = versionHistory.indexOf(v);
+      const groupLabel = formatDateLabel(v.timestamp);
+
+      if (groupLabel !== lastGroupLabel) {
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'version-day-label';
+        labelDiv.textContent = groupLabel;
+        list.appendChild(labelDiv);
+        lastGroupLabel = groupLabel;
+      }
+
+      const isCurrent = (originalIndex === currentVersionIndex);
       const item = document.createElement('div');
-      item.className = `version-item ${idx === snapshots.length - 1 ? 'current' : ''}`;
+      item.className = `version-item ${isCurrent ? 'current' : ''}`;
+      
       item.innerHTML = `
-        <div class="version-time">${snap.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</div>
-        <div class="version-meta">${snap.label}</div>
+        <div class="version-item-row">
+          <div class="version-time">${formatTime(v.timestamp)}</div>
+        </div>
+        <div class="version-author" style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
+          ${v.label} ${v.isHandwritten ? '✍️ (Draft layout)' : ''}
+        </div>
       `;
-      item.addEventListener('click', () => previewSnapshot(idx));
+
+      item.addEventListener('click', () => {
+        rollbackToVersion(originalIndex);
+        document.getElementById('vh-title-date').textContent = `${formatDateLabel(v.timestamp)}, ${formatTime(v.timestamp)}`;
+      });
       list.appendChild(item);
     });
   }
 
-  function previewSnapshot(idx) {
-    selectedPreviewIndex = idx;
-    const snap = snapshots[idx];
-    if (!snap) return;
-
-    const vhCanvas = document.getElementById('vh-canvas');
-    if (!vhCanvas) return;
-    
-    vhCanvas.innerHTML = '';
-
-    // Render static, un-editable preview sheets matching chosen log index
-    const previewPage = document.createElement('div');
-    previewPage.className = 'doc-page';
-    previewPage.contentEditable = 'false';
-    previewPage.innerHTML = snap.content[0];
-
-    vhCanvas.appendChild(previewPage);
-
-    const pageNum = document.createElement('div');
-    pageNum.className = 'page-number';
-    pageNum.textContent = '1 (Version Preview)';
-    vhCanvas.appendChild(pageNum);
-
-    document.querySelectorAll('.version-item').forEach((el, i) => {
-      el.classList.toggle('current', i === idx);
+  function renderReadOnlyPages(container, content, isHandwritten = false) {
+    container.innerHTML = '';
+    content.forEach((html, i) => {
+      const page = document.createElement('div');
+      page.className = 'doc-page';
+      if (isHandwritten) {
+        page.classList.add('handwritten-draft');
+      }
+      page.innerHTML = html;
+      container.appendChild(page);
+      
+      const numberEl = document.createElement('div');
+      numberEl.className = 'page-number';
+      numberEl.textContent = `${i + 1}`;
+      container.appendChild(numberEl);
     });
   }
 
-  function getSelectedPreviewIndex() {
-    return selectedPreviewIndex;
-  }
-
-  function rollbackTo(idx) {
-    const snap = snapshots[idx];
-    if (!snap) return;
-
-    // Hydrate workspace core layout structures with restored contents
-    EditorEngine.forceHydrateAllContent(snap.content);
-    
-    // Append fresh baseline history entry tracking the restoration action
-    captureSnapshot(`Restored version state track from ${snap.timestamp.toLocaleTimeString()}`);
-  }
-
-  return { captureSnapshot, scheduleSnapshot, rollbackTo, previewSnapshot, getSelectedPreviewIndex };
+  return {
+    captureSnapshot,
+    forcePushCustomSnapshot,
+    scheduleSnapshot,
+    renderVersionList,
+    renderReadOnlyPages,
+    formatTime,
+    getHistory: () => versionHistory,
+    getCurrentIndex: () => currentVersionIndex
+  };
 })();
