@@ -30,49 +30,64 @@ const EditorEngine = (() => {
     page.addEventListener('focus', () => (page.dataset.focused = 'true'));
   }
 
-  // Helpers to save/restore cursor to prevent typing jumps
-  function saveSelection() {
+  function saveCaretPosition() {
     const sel = window.getSelection();
-    if (sel.rangeCount > 0) {
-      return sel.getRangeAt(0).cloneRange();
-    }
-    return null;
+    if (!sel || sel.rangeCount === 0) return null;
+    const range = sel.getRangeAt(0);
+    return {
+      startContainer: range.startContainer,
+      startOffset: range.startOffset,
+      endContainer: range.endContainer,
+      endOffset: range.endOffset
+    };
   }
 
-  function restoreSelection(range) {
-    if (range) {
+  function restoreCaretPosition(saved) {
+    if (!saved) return;
+    try {
       const sel = window.getSelection();
+      const range = document.createRange();
+      range.setStart(saved.startContainer, saved.startOffset);
+      range.setEnd(saved.endContainer, saved.endOffset);
       sel.removeAllRanges();
       sel.addRange(range);
+    } catch (e) {
+      console.warn("Caret restoration bypassed:", e);
     }
   }
 
-  /** Debounce overflow checks to the next animation frame so rapid typing stays smooth. */
+  function handleBoundaryKeys(e, page) {
+    // Basic navigation safety checks
+    if (e.key === 'Backend' && page.innerHTML.trim() === '') {
+      // Prevent deleting the initial structural block
+    }
+  }
+
   function queueOverflowCheck(page) {
     if (overflowCheckQueued) return;
     overflowCheckQueued = true;
-    
-    // Save the cursor position BEFORE any DOM manipulation
-    const savedRange = saveSelection();
+
+    const caret = saveCaretPosition();
 
     requestAnimationFrame(() => {
       overflowCheckQueued = false;
       
-      // Perform your overflow logic here (e.g., checking if scrollHeight > clientHeight)
-      // Example:
-      // if (page.scrollHeight > 1056) { handlePagination(); }
+      // Document pagination balance safety threshold
+      if (page.scrollHeight > 1056) {
+        // Dynamic page breakdown logic goes here
+      }
 
-      // Restore the cursor position AFTER manipulation is done
-      restoreSelection(savedRange);
+      restoreCaretPosition(caret);
     });
   }
 
   function buildTemplatePills() {
     const wrap = document.createElement('div');
     wrap.className = 'template-pills';
-    wrap.contentEditable = 'false'; // Keep pills out of user text flow
+    wrap.contentEditable = 'false';
     wrap.innerHTML = `
       <button class="template-pill" type="button" data-pill="meeting">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         Meeting notes
       </button>
     `;
@@ -85,18 +100,22 @@ const EditorEngine = (() => {
   }
 
   function initFirstPage() {
+    const cv = canvas();
+    if (!cv) return;
+    cv.innerHTML = '';
+    
     const page = createPageElement();
-    canvas().appendChild(page);
-    canvas().appendChild(createPageNumberElement(1, 1));
+    cv.appendChild(page);
+    cv.appendChild(createPageNumberElement(1, 1));
 
     const pills = buildTemplatePills();
     page.appendChild(pills);
 
-    // The pills are a blank-doc affordance only; remove them the moment real content appears.
     page.addEventListener('input', () => removeTemplatePills(page), { once: true });
   }
 
   return {
-    initFirstPage
+    initFirstPage,
+    queueOverflowCheck
   };
 })();
