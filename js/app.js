@@ -1,10 +1,9 @@
 /**
- * app.js — Document Core App State Management
+ * app.js — Document Core App State Management Thread
  */
 
-// Central state tracking structures for our live tabs configuration
 const ActiveDocumentData = {
-  currentTab: 'essay', // 'essay' or 'brainstorm'
+  currentTab: 'essay', 
   essay: {
     title: "The Utility of Gods",
     content: [
@@ -14,27 +13,26 @@ const ActiveDocumentData = {
   brainstorm: {
     title: "Brainstorm",
     content: [
-      `<div class="handwritten-draft">
-        <strong>The Wasted Potential of Religion — Brainstorm Document</strong><br><br>
-        <strong>Main Question:</strong> What is religion supposed to accomplish?<br>
-        <em>Not:</em> Prove God exists, Win debates, Explain every mystery.<br>
-        <em>But:</em> Help people become better human beings, Unite communities, Give people purpose, Teach morality, Provide hope during suffering, Encourage self-sacrifice and compassion.<br><br>
-        <strong>Possible Thesis:</strong><br>
-        Religion's value should not be measured by whether its supernatural claims are true, but by whether it creates wiser, kinder, more thoughtful people.<br><br>
-        <strong>Core Theme:</strong> Religion is humanity's greatest social technology. It evolved because it solved universal human problems (Death anxiety, Tribal conflict, Loneliness, Meaninglessness).<br><br>
-        <strong>Interesting Analogy Ideas:</strong><br>
-        - Training wheels.<br>
-        - Scaffolding around a building.<br>
-        - Humanity's operating system.<br>
-        - A tool that sometimes mistakes itself for the craftsman.<br><br>
-        <strong>Why Religion Works So Well:</strong> Stories are easier than abstract rules. People remember characters (Noah, Moses, Jesus, Buddha, Muhammad) but they completely forget lists.<br><br>
-        <strong>Psychology & Sociology Foundations:</strong><br>
-        - Terror Management Theory & Moral Foundations Theory.<br>
-        - Durkheim: Shared rituals create collective trust.<br>
-        - Jonathan Haidt: Religion binds people together into tight moral matrix groups.<br><br>
-        <strong>Philosophy Notes:</strong> Camus (searching matters more than comforting certainty), Nietzsche (the critical problem is losing moral architecture after science replaces myth), William James (judge religious experience strictly by practical real-world downstream effects).<br><br>
-        <strong>The Turning Point:</strong> Where does it begin to fail? When tradition becomes untouchable, questions become dangerous, and defending the dogma becomes more important than improving humanity. <em>"The story becomes more sacred than the lesson it was meant to teach."</em>
-      </div>`
+      `<strong>The Wasted Potential of Religion — Brainstorm Document</strong><br><br>
+       <strong>Main Question:</strong> What is religion supposed to accomplish?<br>
+       <em>Not:</em> Prove God exists, Win debates, Explain every mystery.<br>
+       <em>But:</em> Help people become better human beings, Unite communities, Give people purpose, Teach morality.<br><br>
+       <strong>Possible Thesis:</strong> Religion's value should not be measured by whether its supernatural claims are true, but by whether it creates wiser, kinder, more thoughtful people.<br><br>
+       <strong>Core Theme:</strong> Religion is humanity's greatest social technology. It evolved because it solved universal human problems (Death anxiety, Tribal conflict, Loneliness, Meaninglessness, Social cooperation, Charity).<br><br>
+       <strong>Interesting Analogy Ideas:</strong> Training wheels, A map instead of the destination, Scaffolding around a building, Humanity's operating system, A tool that sometimes mistakes itself for the craftsman.<br><br>
+       <strong>Why Religion Works So Well:</strong> Stories are easier than rules. People remember characters (Noah, Moses, Jesus, Buddha, Muhammad) but forget lists. Emotion creates memory, memory creates identity, identity shapes behaviour.<br><br>
+       <strong>Psychology & Sociology Foundations:</strong> Terror Management Theory, Social Identity Theory, Moral Foundations Theory. Durkheim (Shared rituals create trust), Jonathan Haidt (Religion binds people together), Pew Research (Stronger social support reports).<br><br>
+       <strong>Philosophy Notes:</strong> Camus (Searching matters more than certainty), Nietzsche (Losing morality framework after losing myths), Kierkegaard (Faith contains uncertainty), William James (Judge by practical fruits), Karl Popper (Ideas must remain open to challenge).<br><br>
+       <strong>The Turning Point:</strong> Where does it fail? When questions become dangerous, tradition becomes untouchable, doctrine replaces compassion, and defending the dogma becomes more important than improving humanity. <em>"The story becomes more sacred than the lesson it was meant to teach."</em><br><br>
+       <strong>The Biggest Waste:</strong> Imagine if that structural power focused on scientific curiosity, education, mental health, and environmental stewardship instead of preserving old answers.<br><br>
+       <strong>Possible Essay Structure:</strong><br>
+       - Introduction: Why religion exists.<br>
+       - Paragraph 1: Why it became humanity's greatest social technology.<br>
+       - Paragraph 2: How narratives/rituals shape moral behaviour.<br>
+       - Paragraph 3: When certainty replaces curiosity.<br>
+       - Paragraph 4: Counterargument: inspired progress.<br>
+       - Paragraph 5: Unrealized potential.<br>
+       - Conclusion: The true measure is the kind of people it helps create.`
     ]
   }
 };
@@ -43,14 +41,12 @@ function loadTabWorkspace(tabId) {
   ActiveDocumentData.currentTab = tabId;
   const docData = ActiveDocumentData[tabId];
   
-  // Synchronize top chrome header input fields
   const titleInput = document.querySelector('.doc-title');
   if (titleInput) {
     titleInput.value = docData.title;
     document.title = docData.title;
   }
   
-  // Re-render core document canvas page stream
   const canvas = document.getElementById('doc-canvas');
   canvas.innerHTML = '';
   
@@ -61,7 +57,6 @@ function loadTabWorkspace(tabId) {
     pageNode.setAttribute('spellcheck', 'true');
     pageNode.innerHTML = pageHtml;
     
-    // Apply styling properties dynamically to the Brainstorm track tab
     if (tabId === 'brainstorm') {
       pageNode.classList.add('handwritten-draft');
     }
@@ -84,7 +79,6 @@ function initTabsLayoutController() {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
-      // Save current working changes from canvas back into cache map before switching
       const activeTab = ActiveDocumentData.currentTab;
       const pages = document.querySelectorAll('#doc-canvas .doc-page');
       ActiveDocumentData[activeTab].content = Array.from(pages).map(p => p.innerHTML);
@@ -95,49 +89,48 @@ function initTabsLayoutController() {
 }
 
 function seedSimulatedHistoryTimeline() {
-  // Clear any structural initialization entries
   const historyList = HistoryEngine.getHistory();
   historyList.length = 0;
 
-  // 1. Initial Draft Version (May 12, 2026 @ 09:14 AM)
+  // Snapshot 1: Early structural baseline layout
   HistoryEngine.forcePushCustomSnapshot({
     timestamp: new Date('May 12, 2026 09:14:00'),
-    label: 'Initial Structural Draft Outline',
+    label: 'Initial Structural Outline Draft',
     isHandwritten: true,
     content: [
       `<div class="handwritten-draft">
         <strong>The Wasted Potential of Religion</strong><br><br>
-        <del>Religion is a very old thing that all civilizations have because people are afraid of dying.</del> Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature. Religion has been one of humanity's most effective systems for organizing communities. <ins>However, religion's greatest strength can become its greatest weakness when it discourages curiosity.</ins> The measure of a religion should not be its supernatural claims but the quality of the human beings it helps create.
+        <del>Religion is an old historical phenomenon because prehistoric people were afraid of thunder and death.</del> Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature. Religion has been one of humanity's most effective systems for organizing communities. <ins>However, religion's greatest strength can become its greatest weakness when it discourages curiosity.</ins> The measure of a religion should not be its supernatural claims but the quality of the human beings it helps create.
       </div>`
     ]
   });
 
-  // 2. Structural Paragraph Additions (May 12, 2026 @ 11:30 AM)
+  // Snapshot 2: Mid-day structural text additions
   HistoryEngine.forcePushCustomSnapshot({
     timestamp: new Date('May 12, 2026 11:30:00'),
-    label: 'Expanded Arguments & Sociological References',
+    label: 'Expanded Arguments & Sociological Foundations',
     isHandwritten: true,
     content: [
       `<div class="handwritten-draft">
-        <strong>The Wasted Potential of Religion</strong><br><br>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature... <br><br>Religion has long served as one of humanity's most influential systems for moral education. <del>Churches use stories to get people to behave.</del> Christianity, for example, spread complex ethical teachings through parables. <ins>The sociologist Émile Durkheim argued that religion reinforces social solidarity by binding communities through shared practices.</ins> Stories and rituals are effective because they connect abstract moral ideas to emotion, memory, and identity.
+        <strong>The Wasted Potential of Religion</strong><br><br>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature... <br><br>Religion has long served as one of humanity's most influential systems for moral education. <del>Churches use simple ghost stories to get people to behave in groups.</del> Christianity, for example, spread complex ethical teachings through parables. <ins>The sociologist Émile Durkheim argued that religion reinforces social solidarity by binding communities through shared practices.</ins> Stories and rituals are effective because they connect abstract moral ideas to emotion, memory, and identity.
       </div>`
     ]
   });
 
-  // 3. Intensive Editing Lineage Refactoring (May 12, 2026 @ 02:45 PM)
+  // Snapshot 3: Final structural cleanup passes
   HistoryEngine.forcePushCustomSnapshot({
     timestamp: new Date('May 12, 2026 14:45:00'),
-    label: 'Philosophical Polish & Core Deletions',
+    label: 'Philosophical Polish & Revision Cleanup Pass',
     isHandwritten: true,
     content: [
       `<div class="handwritten-draft">
-        <strong>The Wasted Potential of Religion</strong><br><br>...The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.<br><br>Of course, religion has also inspired remarkable scientific, philosophical, and humanitarian contributions throughout history. <del>Nietzsche said God is dead and that means everything is broken.</del> <ins>Nietzsche observed that modern society had outgrown religion's explanatory role but had yet to replace the moral structure it provided.</ins> Camus argued that genuine courage lies in continuing to search despite uncertainty rather than escaping into comforting certainty. <ins>Humanity does not need fewer cathedrals. It needs cathedrals dedicated to truth rather than certainty.</ins>
+        <strong>The Wasted Potential of Religion</strong><br><br>...The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.<br><br>Of course, religion has also inspired remarkable scientific, philosophical, and humanitarian contributions throughout history. <del>Nietzsche said God is dead and that means our entire morality framework is broken.</del> <ins>Nietzsche observed that modern society had outgrown religion's explanatory role but had yet to replace the moral structure it provided.</ins> Camus argued that genuine courage lies in continuing to search despite uncertainty rather than escaping into comforting certainty. <ins>Humanity does not need fewer cathedrals. It needs cathedrals dedicated to truth rather than certainty.</ins>
       </div>`
     ]
   });
 
-  // 4. Current Clean Production State (Today)
-  HistoryEngine.captureSnapshot('Production Stable State Baseline');
+  // Snapshot 4: Clean present state baseline
+  HistoryEngine.captureSnapshot('Production Active Workspace');
 }
 
 function initHeaderInteractionFields() {
@@ -155,7 +148,6 @@ function initHistoryOverlayBindings() {
   const overlay = document.getElementById('version-history-view');
   const vhCanvas = document.getElementById('vh-canvas');
   
-  // Temporary dynamic hook to test the engine from a floating control link/hotkey
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
       e.preventDefault();
@@ -182,7 +174,6 @@ function initHistoryOverlayBindings() {
   }
 }
 
-// Global Core Initialization Thread
 document.addEventListener('DOMContentLoaded', () => {
   loadTabWorkspace('essay');
   initTabsLayoutController();
