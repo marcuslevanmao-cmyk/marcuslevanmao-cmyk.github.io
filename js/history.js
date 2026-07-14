@@ -1,37 +1,74 @@
 // history.js — Complete Version History Engine with localStorage persistence
 
-const STORAGE_KEY = 'doc_history_v3';
+const STORAGE_KEY = 'doc_history_v4';
 
-// Clean, rich starting text for Version 0 so your document is never empty!
-const initialDocContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
+// Real content blocks for Marcus's revisions
+const marcusInitialContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
+  <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance.</p>
+</div>`;
+
+const marcusSecondContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
+  <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values.</p>
+  <p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables.</p>
+</div>`;
+
+const marcusFinalContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
   <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action.</p>
   <p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables. These simple stories could be understood and remembered by children, farmers, and kings alike. Values like charity, forgiveness, and sacrifice were taught as absolute truths.</p>
 </div>`;
 
+// Set up the high-fidelity historical list for Marcus Le Van Mao
 function getInitialHistory() {
-    const now = new Date();
-    const hours = now.getHours();
-    const mins = now.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
-    const displayHour = hours % 12 || 12;
-    const displayDate = `${now.toLocaleString('en', { month: 'short' })} ${now.getDate()}, ${displayHour}:${mins} ${ampm}`;
-    
-    return [{
-        id: 1,
-        dateObj: now,
-        displayDate: displayDate,
-        dayGroup: now.toLocaleString('en', { weekday: 'long' }),
-        author: "You",
-        authorColor: "#1a73e8",
-        description: "Document opened",
-        tabsState: [
-            {
-                id: "tab_1",
-                title: "The Wasted Potential of Religion",
-                content: initialDocContent
-            }
-        ]
-    }];
+    return [
+        {
+            id: 3,
+            dateObj: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+            displayDate: "Today, 4:58 p.m.",
+            dayGroup: "Today",
+            author: "Marcus Le Van Mao",
+            authorColor: "#1a73e8",
+            description: "Refined body paragraph arguments",
+            tabsState: [
+                {
+                    id: "tab_1",
+                    title: "The Wasted Potential of Religion",
+                    content: marcusFinalContent
+                }
+            ]
+        },
+        {
+            id: 2,
+            dateObj: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+            displayDate: "Today, 4:33 p.m.",
+            dayGroup: "Today",
+            author: "Marcus Le Van Mao",
+            authorColor: "#1a73e8",
+            description: "Structured paragraphs",
+            tabsState: [
+                {
+                    id: "tab_1",
+                    title: "The Wasted Potential of Religion",
+                    content: marcusSecondContent
+                }
+            ]
+        },
+        {
+            id: 1,
+            dateObj: new Date(Date.now() - 1000 * 60 * 120), // 2 hours ago
+            displayDate: "Today, 3:03 p.m.",
+            dayGroup: "Today",
+            author: "Marcus Le Van Mao",
+            authorColor: "#1a73e8",
+            description: "Initial Draft",
+            tabsState: [
+                {
+                    id: "tab_1",
+                    title: "The Wasted Potential of Religion",
+                    content: marcusInitialContent
+                }
+            ]
+        }
+    ];
 }
 
 function loadHistoryFromStorage() {
@@ -88,7 +125,7 @@ const HistoryEngine = (() => {
             dateObj: now,
             displayDate: displayDate,
             dayGroup: dayGroup,
-            author: "You",
+            author: "Marcus Le Van Mao",
             authorColor: "#1a73e8",
             description: description || "Edited",
             tabsState: _getCurrentTabsState()
@@ -158,7 +195,7 @@ function renderHistorySidebar() {
             listContainer.appendChild(dayHeader);
         }
 
-        const isCurrent = index === 0;
+        const isCurrent = index === _selectedPreviewIndex;
         const itemHtml = `
             <div class="vh-item ${isCurrent ? 'active' : ''}" data-id="${version.id}">
                 <div class="vh-item-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
@@ -179,6 +216,7 @@ function renderHistorySidebar() {
         itemEl.addEventListener('click', () => {
             document.querySelectorAll('.vh-item').forEach(i => i.classList.remove('active'));
             itemEl.classList.add('active');
+            _selectedPreviewIndex = index;
             previewVersion(version.id);
         });
         listContainer.appendChild(itemEl);
@@ -230,8 +268,8 @@ function previewVersion(versionId) {
     const canvas = document.getElementById('vh-canvas');
     if (canvas) {
         let html = activeTab.content;
-        if (version.author === 'You') {
-            html = `<div class="vh-edit-you"><span class="vh-edit-label">You</span>${html}</div>`;
+        if (version.author === 'Marcus Le Van Mao') {
+            html = `<div class="vh-edit-you" style="border-left: 2px solid ${version.authorColor}; padding-left: 10px;">${html}</div>`;
         }
         canvas.innerHTML = html;
     }
