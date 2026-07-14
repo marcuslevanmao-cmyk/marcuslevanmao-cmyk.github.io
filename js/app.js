@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         commentBtn.addEventListener('click', () => {
             document.getElementById('version-history-view').hidden = true;
             commentsSidebar.hidden = !commentsSidebar.hidden;
+            if (!commentsSidebar.hidden) CommentsEngine.renderCommentCards();
         });
     }
     if (closeComments && commentsSidebar) {
