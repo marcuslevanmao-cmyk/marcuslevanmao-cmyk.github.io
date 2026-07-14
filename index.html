@@ -39,13 +39,13 @@
             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12h-2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8c2.05 0 3.93.78 5.35 2.05L14 9h7V2l-2.67 2.67C16.65 3.02 14.46 2 11.99 2zm.01 5v5l4.28 2.54.72-1.21-3.5-2.08V7h-1.5z"/>
           </svg>
         </button>
-        <button class="icon-btn" id="toolbar-comment-btn" data-action="comment" title="Add comment (Ctrl+Alt+M)">
+        <button class="icon-btn" id="toolbar-comment-btn" title="Add comment">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M21 4H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h2v4l4-4h12c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 12H7.2l-2.2 2.2V16H3V6h18v10zm-14-3h12v-2H7v2zm0-3h12V8H7v2z"/>
           </svg>
         </button>
-        <button class="share-btn" title="Share Document">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px;"><path d="M12 22V12M12 12l4 4M12 12l-4 4M21 12A9 9 0 1112 3a9 9 0 019 9z"/></svg>
+        <button class="share-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><path d="M12 22V12M12 12l4 4M12 12l-4 4M21 12A9 9 0 1112 3a9 9 0 019 9z"/></svg>
           Share
         </button>
         <div class="avatar-circle">U</div>
@@ -60,9 +60,9 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
       </button>
       <div class="toolbar-sep"></div>
-      <button class="toolbar-btn" data-action="bold" title="Bold (Ctrl+B)"><b>B</b></button>
-      <button class="toolbar-btn" data-action="italic" title="Italic (Ctrl+I)"><i>I</i></button>
-      <button class="toolbar-btn" data-action="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+      <button class="toolbar-btn" data-action="bold" title="Bold"><b>B</b></button>
+      <button class="toolbar-btn" data-action="italic" title="Italic"><i>I</i></button>
+      <button class="toolbar-btn" data-action="underline" title="Underline"><u>U</u></button>
     </div>
   </header>
 
@@ -88,7 +88,7 @@
           <div class="ruler-margin-marker right-margin" style="right: 1in;"></div>
         </div>
       </div>
-      </main>
+    </main>
 
     <aside class="side-panel" id="comments-sidebar">
       <div class="comments-panel">
@@ -105,7 +105,7 @@
       <button class="vh-back-btn" id="vh-back-btn" title="Close version history">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
-      <div class="vh-title" id="vh-title-current">Today</div>
+      <div class="vh-title" id="vh-title-current">Document Version View</div>
     </div>
     <div class="vh-subbar">
       <span>Previewing past state logs</span>
