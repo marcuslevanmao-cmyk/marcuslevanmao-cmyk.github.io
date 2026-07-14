@@ -7,9 +7,7 @@
 }
 
 .doc-icon { flex: 0 0 auto; padding-top: 2px; }
-
 .title-block { flex: 1 1 auto; min-width: 0; }
-
 .title-row { display: flex; align-items: center; gap: 2px; }
 
 .doc-title {
@@ -18,7 +16,7 @@
   outline: none;
   background: transparent;
   padding: 4px 8px;
-  border-radius: 4px; /* Already square */
+  border-radius: 4px;
   color: var(--text-primary);
   max-width: 340px;
   font-family: inherit;
@@ -29,47 +27,89 @@
 .star-btn {
   width: 30px; height: 30px;
   border: none; background: transparent; 
-  border-radius: 4px; /* Changed from 50% */
+  border-radius: 4px; /* Squarish design footprint */
   color: #70757a;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
 .star-btn:hover { background: rgba(60, 64, 67, 0.08); }
 
+.menubar {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}
+.menubar span {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.menubar span:hover { background: rgba(60, 64, 67, 0.08); }
+
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-right: 8px;
+  gap: 8px;
 }
 
-.icon-btn {
-  width: 40px; height: 40px;
-  border: none; background: transparent; 
-  border-radius: 4px; /* Changed from 50% */
+/* Classic Square Button base UI overrides */
+.icon-btn, .toolbar-btn {
+  width: 32px; 
+  height: 32px;
+  border: none; 
+  background: transparent; 
+  border-radius: 4px; /* Classic 2018-2021 UI standard */
   color: var(--text-secondary);
-  display: flex; align-items: center; justify-content: center;
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
   cursor: pointer;
+  box-sizing: border-box;
 }
-.icon-btn:hover { background: rgba(60, 64, 67, 0.08); }
-
-.vh-back-btn {
-  width: 32px; height: 32px;
-  border: none; background: transparent; 
-  border-radius: 4px; /* Changed from 50% */
+.icon-btn:hover, .toolbar-btn:hover {
+  background: rgba(60, 64, 67, 0.08);
   color: var(--text-primary);
-  display: flex; align-items: center; justify-content: center;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #c2e7ff;
+  color: #001d35;
+  border: none;
+  padding: 0 16px;
+  height: 36px;
+  border-radius: 4px; /* Matches layout profile */
+  font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
 }
-.vh-back-btn:hover { background: rgba(60,64,67,0.08); }
+.share-btn:hover { background: #b3dbf2; }
 
-/* Keep avatars circular */
 .avatar-circle {
   width: 32px; height: 32px;
   border-radius: 50%;
-  background: #bb00ff;
+  background: #1a73e8;
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-weight: 500;
-  font-size: 14px;
+}
+
+/* ---------- Toolbar styling strip ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: #edf2fa;
+  border-radius: 24px;
+  margin: 4px 16px;
+}
+.toolbar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border-strong);
+  margin: 0 4px;
 }
