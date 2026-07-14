@@ -1,8 +1,10 @@
 /**
- * editor.js — Multi-Tab Architecture with Live Custom Renaming Engine
+ * editor.js — Multi-Tab Architecture with Persistent Storage
  */
 const EditorEngine = (() => {
-  const documentTabs = [
+  // Check for saved data, fallback to defaults
+  const savedTabs = localStorage.getItem('gdocs_tabs');
+  const documentTabs = savedTabs ? JSON.parse(savedTabs) : [
     {
       id: "tab_1",
       title: "Philosophy Overview",
@@ -15,7 +17,12 @@ const EditorEngine = (() => {
     }
   ];
   
-  let activeTabId = "tab_1";
+  let activeTabId = localStorage.getItem('gdocs_activeTab') || documentTabs[0].id;
+
+  function saveState() {
+    localStorage.setItem('gdocs_tabs', JSON.stringify(documentTabs));
+    localStorage.setItem('gdocs_activeTab', activeTabId);
+  }
 
   function getTabs() { return documentTabs; }
   function getActiveTabId() { return activeTabId; }
@@ -28,6 +35,7 @@ const EditorEngine = (() => {
     }
 
     activeTabId = id;
+    saveState();
     renderTabsSidebar();
     loadActiveTabContent();
   }
@@ -48,6 +56,7 @@ const EditorEngine = (() => {
     
     documentTabs.push(newTab);
     activeTabId = newId;
+    saveState();
     renderTabsSidebar();
     loadActiveTabContent();
     HistoryEngine.captureSnapshot(`Added ${newTab.title}`);
@@ -64,6 +73,7 @@ const EditorEngine = (() => {
     if (activeTabId === id) {
       activeTabId = documentTabs[Math.max(0, index - 1)].id;
     }
+    saveState();
     renderTabsSidebar();
     loadActiveTabContent();
     HistoryEngine.captureSnapshot(`Deleted workspace tab`);
@@ -87,30 +97,26 @@ const EditorEngine = (() => {
         ` : ''}
       `;
 
-      // Prevent switching tabs when interacting with the editable text input field
       const input = row.querySelector('.tab-name-input');
       
       row.addEventListener('click', (e) => {
-        if (e.target !== input) {
-          switchTab(tab.id);
-        }
+        if (e.target !== input) switchTab(tab.id);
       });
 
-      input.addEventListener('click', (e) => {
-        if (tab.id !== activeTabId) {
-          switchTab(tab.id);
-        }
+      input.addEventListener('click', () => {
+        if (tab.id !== activeTabId) switchTab(tab.id);
       });
 
-      // Synchronize input text changes back to memory state model immediately
       input.addEventListener('input', () => {
         tab.title = input.value.trim() || "Untitled Tab";
+        saveState();
       });
 
       input.addEventListener('blur', () => {
         if (!input.value.trim()) {
           input.value = "Untitled Tab";
           tab.title = "Untitled Tab";
+          saveState();
         }
         HistoryEngine.captureSnapshot(`Renamed tab to "${tab.title}"`);
       });
@@ -139,6 +145,7 @@ const EditorEngine = (() => {
 
     page.addEventListener('input', () => {
       tab.htmlContent = page.innerHTML;
+      saveState();
       HistoryEngine.scheduleSnapshot('Auto-saved layout edit');
     });
 
@@ -157,6 +164,7 @@ const EditorEngine = (() => {
     const currentTab = documentTabs.find(t => t.id === activeTabId);
     if (currentTab) {
       currentTab.htmlContent = contentArray[0];
+      saveState();
       loadActiveTabContent();
     }
   }
