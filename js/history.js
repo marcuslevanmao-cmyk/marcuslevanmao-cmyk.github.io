@@ -17,8 +17,8 @@ const brainstormContent = `<h2>Brainstorming Notes</h2><ul><li><b>Theme:</b> Uti
 const documentHistory = [
     {
         id: 9,
-        dateObj: new Date(),
-        displayDate: "July 14, 3:00 p.m.",
+        dateObj: new Date('2026-07-14T15:00:00'),
+        displayDate: "Jul 14, 3:00 p.m.",
         dayGroup: "Tuesday",
         author: "You",
         authorColor: "#4285f4",
@@ -37,12 +37,62 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Format modifier applied",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: finalContent },
+            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: bodyContent },
             { id: 'tab2', title: 'Brainstorm', content: brainstormContent }
         ]
     },
-    // ... (include all other entries from your original, they are fine)
-    // I've shortened for brevity, but keep all your original entries
+    {
+        id: 7,
+        dateObj: new Date('2026-04-28T18:45:00'),
+        displayDate: "Apr 28, 6:45 p.m.",
+        dayGroup: "Tuesday",
+        author: "Marcus Le Van Mao",
+        authorColor: "#0f9d58",
+        description: "Edited: Expanded body with research and quotes",
+        tabsState: [
+            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: bodyContent },
+            { id: 'tab2', title: 'Brainstorm', content: brainstormContent }
+        ]
+    },
+    {
+        id: 6,
+        dateObj: new Date('2026-04-20T20:05:00'),
+        displayDate: "Apr 20, 8:05 p.m.",
+        dayGroup: "Monday",
+        author: "Marcus Le Van Mao",
+        authorColor: "#0f9d58",
+        description: "Edited: Wrote opening paragraph draft",
+        tabsState: [
+            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: introContent },
+            { id: 'tab2', title: 'Brainstorm', content: brainstormContent }
+        ]
+    },
+    {
+        id: 5,
+        dateObj: new Date('2026-04-10T19:30:00'),
+        displayDate: "Apr 10, 7:30 p.m.",
+        dayGroup: "Friday",
+        author: "Marcus Le Van Mao",
+        authorColor: "#0f9d58",
+        description: "Created: Essay outline",
+        tabsState: [
+            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: outlineContent },
+            { id: 'tab2', title: 'Brainstorm', content: brainstormContent }
+        ]
+    },
+    {
+        id: 4,
+        dateObj: new Date('2026-04-02T14:15:00'),
+        displayDate: "Apr 2, 2:15 p.m.",
+        dayGroup: "Thursday",
+        author: "Marcus Le Van Mao",
+        authorColor: "#0f9d58",
+        description: "Created: Initial brainstorm",
+        tabsState: [
+            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: '<div></div>' },
+            { id: 'tab2', title: 'Brainstorm', content: brainstormContent }
+        ]
+    },
 ];
 
 // ============================================================
@@ -239,10 +289,13 @@ function previewVersion(versionId) {
         const activeTab = version.tabsState.find(t => t.id === currentlyPreviewingTabId) || version.tabsState[0];
         const canvas = document.getElementById('vh-canvas');
         if (canvas) {
-            const isLatest = documentHistory.length > 0 && version.id === documentHistory[0].id;
+            // Only "You" ever produced the specific edit marked with vh-edit-you (baked into
+            // finalContent). Everything Marcus wrote never contains that markup, so this is a
+            // safety net, not the primary gate — and unlike checking documentHistory[0], it stays
+            // correct even after live snapshots (e.g. "Document session opened") get unshifted
+            // ahead of this seed data on every page load.
             let html = activeTab.content;
-            if (!isLatest) {
-                // Older snapshots predate the "You" edit pass — render Marcus's plain text without it.
+            if (version.author !== 'You') {
                 html = html
                     .replace(/\s*class="vh-edit-you"/g, '')
                     .replace(/<span class="vh-edit-label">.*?<\/span>/g, '');
