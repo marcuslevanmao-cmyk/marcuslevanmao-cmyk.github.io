@@ -391,6 +391,12 @@ const HistoryEngine = (() => {
 // ============================================================
 
 function previewVersion(versionId) {
+  if (version.author === 'Marcus Le Van Mao') {
+    html = `<div class="vh-edit-you">
+              <span class="vh-edit-label">Edited by Marcus Le Van Mao</span>
+              ${html}
+            </div>`;
+}
     const version = currentHistory.find(v => v.id === versionId);
     if (!version) return;
 
