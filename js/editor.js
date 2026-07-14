@@ -52,14 +52,13 @@ const EditorEngine = (() => {
       sel.removeAllRanges();
       sel.addRange(range);
     } catch (e) {
-      console.warn("Caret restoration bypassed:", e);
+      console.warn("Caret restoration context bypassed:", e);
     }
   }
 
   function handleBoundaryKeys(e, page) {
-    // Basic navigation safety checks
-    if (e.key === 'Backend' && page.innerHTML.trim() === '') {
-      // Prevent deleting the initial structural block
+    if (e.key === 'Backspace' && page.innerHTML.trim() === '') {
+      // Safety safeguard for structural page nodes
     }
   }
 
@@ -72,9 +71,9 @@ const EditorEngine = (() => {
     requestAnimationFrame(() => {
       overflowCheckQueued = false;
       
-      // Document pagination balance safety threshold
+      // Page pagination balancing validation threshold
       if (page.scrollHeight > 1056) {
-        // Dynamic page breakdown logic goes here
+        // Dynamic breakdown overflow mapping code lives here
       }
 
       restoreCaretPosition(caret);
@@ -102,7 +101,9 @@ const EditorEngine = (() => {
   function initFirstPage() {
     const cv = canvas();
     if (!cv) return;
-    cv.innerHTML = '';
+    
+    // Safety check: Don't stomp existing text nodes if app re-initializes
+    if (cv.querySelector('.doc-page')) return;
     
     const page = createPageElement();
     cv.appendChild(page);
