@@ -1,28 +1,31 @@
 /**
- * history.js — Automated Timeline Engine
+ * history.js — Timeline State Engine
  */
 const HistoryEngine = (() => {
   const snapshots = [];
   let debounceTimer = null;
+  let selectedPreviewIndex = -1;
 
   function scheduleSnapshot(label) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       captureSnapshot(label);
-    }, 2500); // Wait for 2.5s of typing inactivity before snapshotting
+    }, 2000);
   }
 
   function captureSnapshot(label) {
-    const pages = Array.from(document.querySelectorAll('.doc-page')).map(p => p.innerHTML);
+    const activePage = document.querySelector('.doc-page');
+    if (!activePage) return;
     
-    // Prevent duplicate logs if content didn't change
+    const pageHtml = activePage.innerHTML;
     const lastSnap = snapshots[snapshots.length - 1];
-    if (lastSnap && JSON.stringify(lastSnap.content) === JSON.stringify(pages)) return;
+    
+    if (lastSnap && lastSnap.content[0] === pageHtml) return;
 
     snapshots.push({
       timestamp: new Date(),
-      label: label || `Revision Log #${snapshots.length + 1}`,
-      content: pages
+      label: label || `Edit Revision Log #${snapshots.length + 1}`,
+      content: [pageHtml]
     });
     renderTimelineItems();
   }
@@ -39,24 +42,53 @@ const HistoryEngine = (() => {
         <div class="version-time">${snap.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</div>
         <div class="version-meta">${snap.label}</div>
       `;
-      item.addEventListener('click', () => rollbackTo(idx));
+      item.addEventListener('click', () => previewSnapshot(idx));
       list.appendChild(item);
     });
   }
 
-  function rollbackTo(idx) {
+  function previewSnapshot(idx) {
+    selectedPreviewIndex = idx;
     const snap = snapshots[idx];
     if (!snap) return;
+
+    const vhCanvas = document.getElementById('vh-canvas');
+    if (!vhCanvas) return;
     
-    const livePages = document.querySelectorAll('.doc-page');
-    livePages.forEach((p, i) => {
-      if (snap.content[i] !== undefined) p.innerHTML = snap.content[i];
-    });
-    
+    vhCanvas.innerHTML = '';
+
+    // Render static, un-editable preview sheets matching chosen log index
+    const previewPage = document.createElement('div');
+    previewPage.className = 'doc-page';
+    previewPage.contentEditable = 'false';
+    previewPage.innerHTML = snap.content[0];
+
+    vhCanvas.appendChild(previewPage);
+
+    const pageNum = document.createElement('div');
+    pageNum.className = 'page-number';
+    pageNum.textContent = '1 (Version Preview)';
+    vhCanvas.appendChild(pageNum);
+
     document.querySelectorAll('.version-item').forEach((el, i) => {
       el.classList.toggle('current', i === idx);
     });
   }
 
-  return { captureSnapshot, scheduleSnapshot, rollbackTo };
+  function getSelectedPreviewIndex() {
+    return selectedPreviewIndex;
+  }
+
+  function rollbackTo(idx) {
+    const snap = snapshots[idx];
+    if (!snap) return;
+
+    // Hydrate workspace core layout structures with restored contents
+    EditorEngine.forceHydrateAllContent(snap.content);
+    
+    // Append fresh baseline history entry tracking the restoration action
+    captureSnapshot(`Restored version state track from ${snap.timestamp.toLocaleTimeString()}`);
+  }
+
+  return { captureSnapshot, scheduleSnapshot, rollbackTo, previewSnapshot, getSelectedPreviewIndex };
 })();
