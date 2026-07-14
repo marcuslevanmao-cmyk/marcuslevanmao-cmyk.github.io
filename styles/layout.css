@@ -33,7 +33,7 @@ html, body {
   flex-direction: column;
 }
 
-/* ---------- App Header Container ---------- */
+/* ---------- App Header & Toolbars ---------- */
 .app-header {
   flex: 0 0 auto;
   background: var(--header-bg);
@@ -48,7 +48,7 @@ html, body {
   position: relative;
 }
 
-/* Document Sidebar Tabs Control */
+/* Document Tabs Sidebar Layout */
 .tabs-sidebar {
   flex: 0 0 var(--tabs-width);
   width: var(--tabs-width);
@@ -60,7 +60,7 @@ html, body {
 }
 .tabs-sidebar[hidden] { display: none; }
 
-/* Document Canvas Viewport */
+/* Document Scrolling Canvas Surface */
 .doc-canvas {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -72,7 +72,7 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Right Rail Panel Utility */
+/* Right Margin Comment Stream Panel */
 .side-panel {
   flex: 0 0 auto;
   overflow-y: auto;
@@ -83,7 +83,7 @@ html, body {
   .tabs-sidebar { display: none; }
 }
 
-/* ---------- Full-Screen Version History State Engine Overlay ---------- */
+/* ---------- Chronological History Interface Overlay ---------- */
 .version-history-view {
   position: fixed;
   inset: 0;
@@ -115,21 +115,20 @@ html, body {
   overflow-y: auto;
 }
 
-/* Dynamic simulation style overrides for historic draft testing */
+/* ---------- Ink Simulation Rules For Historical Drafts ---------- */
 .handwritten-draft {
   font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive !important;
-  color: #1c3aa9 !important;
+  color: #1a3aa3 !important;
   line-height: 1.6 !important;
 }
-
 .handwritten-draft del {
-  color: #d93025 !important;
+  color: #c5221f !important;
   text-decoration: line-through;
-  opacity: 0.7;
+  font-weight: bold;
 }
-
 .handwritten-draft ins {
   color: #137333 !important;
   text-decoration: none;
   background-color: #e6f4ea;
+  border-bottom: 1px dashed #137333;
 }
