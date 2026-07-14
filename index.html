@@ -1,4 +1,4 @@
-<!-- index.html -->
+<!-- index.html (unchanged except for the initial doc-title value, keep as is) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,7 +152,6 @@
             </div>
           </div>
           <div id="pages-container"></div>
-          <!-- Margin comments container is injected by JS -->
         </div>
       </div>
     </main>
@@ -198,7 +197,7 @@
 
 <!-- ===== VERSION HISTORY OVERLAY ===== -->
 <div id="version-history-view" hidden>
-  <div class="vh-container" style="display:flex; flex-direction:column; height:100vh;">
+  <div style="display:flex; flex-direction:column; height:100vh;">
 
     <!-- Top bar -->
     <div class="vh-header">
@@ -214,22 +213,22 @@
     </div>
 
     <!-- Workspace -->
-    <div class="vh-container" style="flex:1; display:flex; flex-direction:row; overflow:hidden;">
-      <aside class="vh-tabs-sidebar" style="width:220px; border-right:1px solid var(--border-strong); background:#fff; padding:12px 0; overflow-y:auto; flex-shrink:0;">
+    <div style="flex:1; display:flex; flex-direction:row; overflow:hidden;">
+      <aside style="width:220px; border-right:1px solid var(--border-strong); background:#fff; padding:12px 0; overflow-y:auto; flex-shrink:0;">
         <div style="padding:0 16px 8px; font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); font-weight:600;">Document tabs</div>
         <div id="vh-tabs-container"></div>
       </aside>
 
-      <main class="vh-canvas-wrapper" style="flex:1; overflow-y:auto; padding:24px; display:flex; flex-direction:column; align-items:center; background:var(--canvas-bg);">
+      <main style="flex:1; overflow-y:auto; padding:24px; display:flex; flex-direction:column; align-items:center; background:var(--canvas-bg);">
         <div id="vh-canvas" style="width:816px; background:#fff; padding:96px; min-height:1056px; box-shadow:0 1px 3px rgba(60,64,67,0.15); border:1px solid var(--border-subtle);"></div>
       </main>
 
-      <aside class="vh-panel" style="width:280px; border-left:1px solid var(--border-strong); background:#fff; display:flex; flex-direction:column; flex-shrink:0;">
-        <div class="vh-panel-header" style="padding:16px; border-bottom:1px solid var(--border-strong);">
+      <aside style="width:280px; border-left:1px solid var(--border-strong); background:#fff; display:flex; flex-direction:column; flex-shrink:0;">
+        <div style="padding:16px; border-bottom:1px solid var(--border-strong);">
           <h2 style="font-size:16px; font-weight:500; margin:0;">Version history</h2>
         </div>
         <div class="version-list" id="version-list" style="flex:1; overflow-y:auto; padding:8px 12px;"></div>
-        <div class="vh-panel-footer" style="padding:12px 16px; border-top:1px solid var(--border-strong); font-size:12px; color:var(--text-secondary);">
+        <div style="padding:12px 16px; border-top:1px solid var(--border-strong); font-size:12px; color:var(--text-secondary);">
           <label><input type="checkbox" checked /> Highlight changes</label>
         </div>
       </aside>
@@ -249,7 +248,7 @@
   </div>
 </div>
 
-<!-- ===== SCRIPTS (load order fixed: editor first, then history, comments, app) ===== -->
+<!-- ===== SCRIPTS ===== -->
 <script src="js/editor.js"></script>
 <script src="js/history.js"></script>
 <script src="js/comments.js"></script>
