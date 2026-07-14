@@ -125,13 +125,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  document.addEventListener('click', (e) => {
-    if (commentsSidebar && !commentsSidebar.hidden) {
-      const isCommentBtn = e.target.closest('#comment-btn');
-      const isSidebar = e.target.closest('#comments-sidebar');
-      if (!isCommentBtn && !isSidebar) {
-        commentsSidebar.hidden = true;
-      }
+ document.addEventListener('DOMContentLoaded', () => {
+    // 1. Render the tabs sidebar (content is already loaded by history.js)
+    EditorEngine.renderTabsSidebar();
+    
+    // No need to call loadActiveTabContent() here – history.js already restored the latest version.
+    // But if for some reason there's no content, load it.
+    if (!document.querySelector('.doc-page')) {
+        EditorEngine.loadActiveTabContent();
     }
-  });
+
+    CommentsEngine.bindSelectionListener();
+
+    // ... rest of your app.js (buttons, etc.) ...
 });
