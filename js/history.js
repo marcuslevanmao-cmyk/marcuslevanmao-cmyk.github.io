@@ -49,7 +49,6 @@ const HistoryEngine = (() => {
     if (!version) return;
     currentVersionIndex = index;
     
-    // Restore content cleanly to modern dynamic pages
     const canvas = document.getElementById('doc-canvas');
     canvas.innerHTML = '';
     
@@ -60,7 +59,6 @@ const HistoryEngine = (() => {
       page.setAttribute('spellcheck', 'true');
       page.innerHTML = html;
       
-      // If the restored history element was a handwritten draft, match style constraints
       if (version.isHandwritten) {
         page.classList.add('handwritten-draft');
       }
@@ -117,7 +115,7 @@ const HistoryEngine = (() => {
           <div class="version-time">${formatTime(v.timestamp)}</div>
         </div>
         <div class="version-author" style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
-          ${v.label} ${v.isHandwritten ? '✍️ (Draft layout)' : ''}
+          ${v.label} ${v.isHandwritten ? '✍️ (Draft Layout)' : ''}
         </div>
       `;
 
