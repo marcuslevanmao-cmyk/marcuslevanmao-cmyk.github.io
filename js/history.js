@@ -67,13 +67,33 @@ const HistoryEngine = (() => {
     EditorEngine.refreshPageNumbers();
   }
 
-  function formatTimestamp(date) {
+  function formatTime(date) {
+    return date.toLocaleString(undefined, { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function isSameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate();
+  }
+
+  function dayLabel(date) {
+    const now = new Date();
+    if (isSameDay(date, now)) return 'Today';
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (isSameDay(date, yesterday)) return 'Yesterday';
+    return date.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+  }
+
+  function formatFullTimestamp(date) {
     return date.toLocaleString(undefined, {
       month: 'short', day: 'numeric',
       hour: 'numeric', minute: '2-digit',
     });
   }
 
+  /** Render the day-grouped card list used in the version-history side panel. */
   function renderVersionList() {
     const list = document.getElementById('version-list');
     if (!list) return;
@@ -84,16 +104,53 @@ const HistoryEngine = (() => {
       return;
     }
 
-    // Most recent first.
-    versionHistory.forEach((v, i) => {
+    // Most recent first, grouped by day.
+    const ordered = versionHistory.map((v, i) => ({ ...v, index: i })).reverse();
+    let lastDay = null;
+
+    ordered.forEach((v) => {
+      const label = dayLabel(v.timestamp);
+      if (label !== lastDay) {
+        const dayHeading = document.createElement('div');
+        dayHeading.className = 'version-day-label';
+        dayHeading.textContent = label;
+        list.appendChild(dayHeading);
+        lastDay = label;
+      }
+
+      const isCurrent = v.index === currentVersionIndex;
       const item = document.createElement('div');
-      item.className = 'version-item' + (i === currentVersionIndex ? ' current' : '');
+      item.className = 'version-item' + (isCurrent ? ' current' : '');
       item.innerHTML = `
-        <span class="version-time">${formatTimestamp(v.timestamp)}</span>
-        <span class="version-meta">${v.label}</span>
+        <div class="version-item-row">
+          <span class="version-time">${formatFullTimestamp(v.timestamp)}</span>
+          <button class="version-item-menu" title="More options" aria-label="More options">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/></svg>
+          </button>
+        </div>
+        ${isCurrent ? '<div class="version-meta">Current version</div>' : ''}
+        <div class="version-author"><span class="version-author-dot"></span>You</div>
       `;
-      item.addEventListener('click', () => rollbackToVersion(i));
-      list.prepend(item);
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.version-item-menu')) return;
+        rollbackToVersion(v.index);
+      });
+      list.appendChild(item);
+    });
+  }
+
+  /** Render a read-only copy of a version's pages into a target container (used by the version-history canvas). */
+  function renderReadOnlyPages(container, content) {
+    container.innerHTML = '';
+    content.forEach((html, i) => {
+      const page = document.createElement('div');
+      page.className = 'doc-page';
+      page.innerHTML = html;
+      container.appendChild(page);
+      const numberEl = document.createElement('div');
+      numberEl.className = 'page-number';
+      numberEl.textContent = `${i + 1}`;
+      container.appendChild(numberEl);
     });
   }
 
@@ -102,6 +159,8 @@ const HistoryEngine = (() => {
     scheduleSnapshot,
     rollbackToVersion,
     renderVersionList,
+    renderReadOnlyPages,
+    formatTime,
     getCurrentIndex: () => currentVersionIndex,
     getHistory: () => versionHistory,
   };
