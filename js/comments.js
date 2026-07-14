@@ -11,12 +11,14 @@ const CommentsEngine = (() => {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
         pendingRange = null;
+        reflectAddCommentButtonState();
         return;
       }
 
       const range = sel.getRangeAt(0);
       if (!range.toString().trim()) {
         pendingRange = null;
+        reflectAddCommentButtonState();
         return;
       }
 
@@ -28,7 +30,13 @@ const CommentsEngine = (() => {
       } else {
         pendingRange = null;
       }
+      reflectAddCommentButtonState();
     });
+  }
+
+  function reflectAddCommentButtonState() {
+    const btn = document.querySelector('.cs-add-comment-btn');
+    if (btn) btn.disabled = !pendingRange;
   }
 
   function promptForCommentOnSelection() {
@@ -99,15 +107,29 @@ const CommentsEngine = (() => {
     if (!list) return;
 
     const activeComposer = list.querySelector('.comment-composer-card');
+    const activeEntries = [];
+    comments.forEach((c, key) => {
+      if (!c.resolved && document.querySelector(`span[data-comment-id="${c.id}"]`)) {
+        activeEntries.push([key, c]);
+      }
+    });
+
     list.innerHTML = '';
     if (activeComposer) list.appendChild(activeComposer);
 
-    comments.forEach((c, key) => {
-      if (c.resolved) return;
-      
-      const anchorExists = document.querySelector(`span[data-comment-id="${c.id}"]`);
-      if (!anchorExists) return;
+    if (activeEntries.length === 0 && !activeComposer) {
+      list.innerHTML = `
+        <div class="cs-empty-state">
+          <p>Start a discussion</p>
+          <button class="btn-primary cs-add-comment-btn" style="width:100%;" disabled>Add comment</button>
+        </div>
+      `;
+      list.querySelector('.cs-add-comment-btn').addEventListener('click', promptForCommentOnSelection);
+      reflectAddCommentButtonState();
+      return;
+    }
 
+    activeEntries.forEach(([key, c]) => {
       const card = document.createElement('div');
       card.className = 'comment-card';
       card.innerHTML = `
@@ -127,7 +149,7 @@ const CommentsEngine = (() => {
       card.querySelector('[data-act="resolve"]').addEventListener('click', () => {
         c.resolved = true;
         document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => el.className = 'comment-anchor resolved');
-        card.remove();
+        renderCommentCards();
       });
 
       // Delete action (Removes span wrapper entirely)
@@ -136,7 +158,7 @@ const CommentsEngine = (() => {
             el.replaceWith(...el.childNodes); // Strips the span, leaves the text
         });
         comments.delete(key);
-        card.remove();
+        renderCommentCards();
       });
 
       list.appendChild(card);
