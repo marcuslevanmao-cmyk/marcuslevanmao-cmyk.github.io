@@ -177,3 +177,27 @@ window.restoreFullDocumentState = function(savedTabsState) {
 
 // Whenever a change is saved (e.g., auto-save loop or Ctrl+S), just call:
 // saveVersionToHistory(appTabs);
+// Toggle Comments Sidebar
+const commentBtn = document.getElementById('comment-btn');
+const commentsSidebar = document.getElementById('comments-sidebar');
+const closeCommentsBtn = document.getElementById('close-comments-btn');
+
+commentBtn.addEventListener('click', () => {
+    // If opening comments, close history
+    document.getElementById('version-history-view').hidden = true;
+    commentsSidebar.hidden = !commentsSidebar.hidden;
+});
+
+closeCommentsBtn.addEventListener('click', () => {
+    commentsSidebar.hidden = true;
+});
+
+// Fix History Button
+const historyBtn = document.getElementById('history-btn');
+const historyView = document.getElementById('version-history-view');
+
+historyBtn.addEventListener('click', () => {
+    // If opening history, close comments
+    commentsSidebar.hidden = true;
+    historyView.hidden = !historyView.hidden;
+});
