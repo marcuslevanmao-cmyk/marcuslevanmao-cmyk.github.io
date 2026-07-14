@@ -18,8 +18,6 @@ const fullBrainstormContent = `<div style="font-family: Arial, sans-serif; line-
   </ul>
 </div>`;
 
-const outlineContent = `<h2>Persuasive Essay Outline</h2><ul><li>Intro</li><li>Body 1</li><li>Conclusion</li></ul>`;
-
 const documentHistory = [
     {
         id: 8,
@@ -103,11 +101,18 @@ const HistoryEngine = (() => {
     let _snapshotTimeout = null;
 
     function _getCurrentTabsState() {
-        if (typeof EditorEngine === 'undefined') return [];
-        return EditorEngine.getTabs().map(tab => ({
+        // Safe check: If EditorEngine or getTabs doesn't exist yet, return our default history state
+        if (typeof EditorEngine === 'undefined' || typeof EditorEngine.getTabs !== 'function') {
+            return _history[0]?.tabsState || [];
+        }
+        const tabs = EditorEngine.getTabs();
+        if (!tabs || !Array.isArray(tabs)) {
+            return _history[0]?.tabsState || [];
+        }
+        return tabs.map(tab => ({
             id: tab.id,
             title: tab.title,
-            content: tab.htmlContent
+            content: tab.htmlContent || ""
         }));
     }
 
@@ -236,7 +241,6 @@ function renderHistorySidebar() {
 
 window.restoreFullDocumentState = function(tabsState) {
     if (typeof EditorEngine !== 'undefined') {
-        // Find existing tabs and update contents, or insert back
         tabsState.forEach(savedTab => {
             const liveTab = EditorEngine.getTabs().find(t => t.id === savedTab.id);
             if (liveTab) {
@@ -255,8 +259,5 @@ function initHistory() {
     }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initHistory);
-} else {
-    initHistory();
-}
+// Wait for entire window (including editor.js) to load fully before running setup
+window.addEventListener('load', initHistory);
