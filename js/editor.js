@@ -288,5 +288,15 @@ const EditorEngine = (() => {
     }
   }
 
-  return { getTabs, getActiveTabId, renderTabsSidebar, loadActiveTabContent, createNewTab, forceHydrateAllContent };
-})();
+ return {
+    getTabs,
+    getActiveTabId,
+    renderTabsSidebar,
+    loadActiveTabContent,
+    createNewTab,
+    forceHydrateAllContent,
+    // NEW: Expose switchTab for history restoration
+    switchTab: switchTab,
+    // NEW: Expose getTabs for history engine
+    getTabs: getTabs
+};
