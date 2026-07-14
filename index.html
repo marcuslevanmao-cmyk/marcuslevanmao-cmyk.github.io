@@ -38,7 +38,7 @@
           <button type="button" class="menu-item">Insert</button>
           <button type="button" class="menu-item">Format</button>
           <button type="button" class="menu-item">Tools</button>
-          <button type="button" id="history-open-btn" class="menu-item highlight-history">Version History (Ctrl+H)</button>
+          <button type="button" id="history-open-btn" class="menu-item style-history-trigger" style="color: var(--accent-blue); font-weight: bold;">Version History (Ctrl+H)</button>
         </div>
       </div>
     </div>
@@ -55,11 +55,11 @@
   <div class="workspace-wrapper">
     
     <aside class="tabs-sidebar" id="tabs-sidebar">
-      <button class="tab-btn active" data-tab="essay">
+      <button class="tab-btn active" data-tab="essay" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px; border: 1px solid var(--border-subtle); background: #fff; border-radius: 6px; cursor: pointer; text-align: left; font-family: inherit; font-size: 14px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
         The Utility of Gods
       </button>
-      <button class="tab-btn" data-tab="brainstorm">
+      <button class="tab-btn" data-tab="brainstorm" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px; border: 1px solid transparent; background: transparent; border-radius: 6px; cursor: pointer; text-align: left; font-family: inherit; font-size: 14px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         Brainstorm Material
       </button>
