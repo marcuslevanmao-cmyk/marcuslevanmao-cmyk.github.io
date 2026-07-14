@@ -1,17 +1,16 @@
 /**
- * editor.js — Multi-Tab Architecture and Layout Handler
+ * editor.js — Multi-Tab Architecture with Live Custom Renaming Engine
  */
 const EditorEngine = (() => {
-  // Application Data Tier State Model
   const documentTabs = [
     {
       id: "tab_1",
-      title: "Tab 1",
+      title: "Philosophy Overview",
       htmlContent: `<div>Stoicism was founded in Athens by Zeno of Citium around 300 BC. It teaches that virtue is happiness. Select text and click the Comment button to see the contextual composer card!</div>`
     },
     {
       id: "tab_2",
-      title: "Tab 2",
+      title: "Seneca Quotes",
       htmlContent: `<div>"We suffer more often in imagination than in reality." — Seneca. This is an entirely distinct document content tab module.</div>`
     }
   ];
@@ -22,7 +21,6 @@ const EditorEngine = (() => {
   function getActiveTabId() { return activeTabId; }
 
   function switchTab(id) {
-    // Preserve current content state structure prior to transition
     const currentTab = documentTabs.find(t => t.id === activeTabId);
     const activePage = document.querySelector('.doc-page');
     if (currentTab && activePage) {
@@ -35,7 +33,6 @@ const EditorEngine = (() => {
   }
 
   function createNewTab() {
-    // Save current active tab data
     const activePage = document.querySelector('.doc-page');
     if (activePage) {
       const currentTab = documentTabs.find(t => t.id === activeTabId);
@@ -45,7 +42,7 @@ const EditorEngine = (() => {
     const newId = `tab_${Date.now()}`;
     const newTab = {
       id: newId,
-      title: `Tab ${documentTabs.length + 1}`,
+      title: `Untitled Tab ${documentTabs.length + 1}`,
       htmlContent: `<div>Empty tab view entry. Begin writing context text layout parameters directly here...</div>`
     };
     
@@ -57,8 +54,8 @@ const EditorEngine = (() => {
   }
 
   function deleteTab(id, event) {
-    event.stopPropagation(); // Avoid triggering switch tab event loop
-    if (documentTabs.length <= 1) return; // Keep at least one tab running
+    event.stopPropagation();
+    if (documentTabs.length <= 1) return;
     
     const index = documentTabs.findIndex(t => t.id === id);
     if (index === -1) return;
@@ -90,13 +87,32 @@ const EditorEngine = (() => {
         ` : ''}
       `;
 
-      // Wire activation trigger
-      row.addEventListener('click', () => switchTab(tab.id));
-
-      // Wire inline rename handler inputs
+      // Prevent switching tabs when interacting with the editable text input field
       const input = row.querySelector('.tab-name-input');
-      input.addEventListener('change', () => {
-        tab.title = input.value || "Untitled Tab";
+      
+      row.addEventListener('click', (e) => {
+        if (e.target !== input) {
+          switchTab(tab.id);
+        }
+      });
+
+      input.addEventListener('click', (e) => {
+        if (tab.id !== activeTabId) {
+          switchTab(tab.id);
+        }
+      });
+
+      // Synchronize input text changes back to memory state model immediately
+      input.addEventListener('input', () => {
+        tab.title = input.value.trim() || "Untitled Tab";
+      });
+
+      input.addEventListener('blur', () => {
+        if (!input.value.trim()) {
+          input.value = "Untitled Tab";
+          tab.title = "Untitled Tab";
+        }
+        HistoryEngine.captureSnapshot(`Renamed tab to "${tab.title}"`);
       });
 
       if (documentTabs.length > 1) {
@@ -121,7 +137,6 @@ const EditorEngine = (() => {
     page.setAttribute('spellcheck', 'true');
     page.innerHTML = tab.htmlContent;
 
-    // Attach local document tracking logic inputs
     page.addEventListener('input', () => {
       tab.htmlContent = page.innerHTML;
       HistoryEngine.scheduleSnapshot('Auto-saved layout edit');
@@ -134,7 +149,6 @@ const EditorEngine = (() => {
     pageNum.textContent = '1';
     target.appendChild(pageNum);
 
-    // Synchronize comments visibility state context markers
     CommentsEngine.renderCommentCards();
   }
 
