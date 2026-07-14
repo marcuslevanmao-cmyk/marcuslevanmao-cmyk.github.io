@@ -19,11 +19,13 @@ const CommentsEngine = (() => {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
         pendingRange = null;
+        reflectAddCommentButtonState();
         return;
       }
       const range = sel.getRangeAt(0);
       if (range.toString().trim() === '') {
         pendingRange = null;
+        reflectAddCommentButtonState();
         return;
       }
       // Only allow selections that live inside a single .doc-page.
@@ -33,10 +35,17 @@ const CommentsEngine = (() => {
         : container.parentElement && container.parentElement.closest('.doc-page');
       if (!page) {
         pendingRange = null;
+        reflectAddCommentButtonState();
         return;
       }
       pendingRange = range.cloneRange();
+      reflectAddCommentButtonState();
     });
+  }
+
+  function reflectAddCommentButtonState() {
+    const btn = document.querySelector('.add-comment-btn');
+    if (btn) btn.disabled = !pendingRange;
   }
 
   /** Coordinate Extraction: compute positional data from the selection's bounding rect. */
@@ -118,7 +127,14 @@ const CommentsEngine = (() => {
 
     const active = Array.from(comments.values()).filter((c) => !c.resolved);
     if (active.length === 0) {
-      list.innerHTML = '<p class="side-panel-empty">Select text and click the comment icon to start a discussion.</p>';
+      list.innerHTML = `
+        <div class="comments-empty-state">
+          <p class="comments-empty-title">Start a discussion</p>
+          <button class="add-comment-btn" disabled>Add comment</button>
+        </div>
+      `;
+      list.querySelector('.add-comment-btn').addEventListener('click', promptForCommentOnSelection);
+      reflectAddCommentButtonState();
       return;
     }
 
