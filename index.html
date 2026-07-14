@@ -40,17 +40,55 @@
             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12h-2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8c2.05 0 3.93.78 5.35 2.05L14 9h7V2l-2.67 2.67C16.65 3.02 14.46 2 11.99 2zm.01 5v5l4.28 2.54.72-.72L13 11V7h-1z"/>
           </svg>
         </button>
+        <button class="share-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+          Share
+        </button>
+        <div class="anonymous-profile" title="Anonymous Profile">U</div>
       </div>
     </div>
     
     <div class="toolbar">
+      <!-- Undo / Redo -->
       <button class="toolbar-btn" data-action="undo" title="Undo (Ctrl+Z)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
       </button>
       <button class="toolbar-btn" data-action="redo" title="Redo (Ctrl+Y)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
       </button>
-      <div class="toolbar-separator"></div>
+      
+      <div class="toolbar-sep"></div>
+
+      <!-- Styles Dropdown -->
+      <select class="toolbar-select" title="Styles" aria-label="Style">
+        <option value="Normal text" selected>Normal text</option>
+        <option value="Heading 1">Heading 1</option>
+        <option value="Heading 2">Heading 2</option>
+        <option value="Heading 3">Heading 3</option>
+      </select>
+
+      <div class="toolbar-sep"></div>
+
+      <!-- Font Dropdown -->
+      <select class="toolbar-select" title="Font" aria-label="Font" style="font-family: Arial; width: 120px;">
+        <option value="Arial" selected>Arial</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+      </select>
+
+      <div class="toolbar-sep"></div>
+
+      <!-- Font Size Controls -->
+      <div class="size-controls">
+        <button class="toolbar-btn text-size-btn" id="decrease-size-btn" title="Decrease font size">-</button>
+        <input type="text" class="font-size-input" value="11" title="Font size" aria-label="Font size">
+        <button class="toolbar-btn text-size-btn" id="increase-size-btn" title="Increase font size">+</button>
+      </div>
+
+      <div class="toolbar-sep"></div>
+
+      <!-- Inline Formatting -->
       <button class="toolbar-btn" data-action="bold" title="Bold (Ctrl+B)" style="font-weight: bold;">B</button>
       <button class="toolbar-btn" data-action="italic" title="Italic (Ctrl+I)" style="font-style: italic;">I</button>
       <button class="toolbar-btn" data-action="underline" title="Underline (Ctrl+U)" style="text-decoration: underline;">U</button>
@@ -60,7 +98,10 @@
       <button class="toolbar-btn" data-action="hilitecolor" title="Highlight Color">
         <span style="background: #fff475; padding: 0 4px; border-radius: 2px;">H</span>
       </button>
-      <div class="toolbar-separator"></div>
+      
+      <div class="toolbar-sep"></div>
+
+      <!-- Alignment -->
       <button class="toolbar-btn" data-action="justifyleft" title="Align Left">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg>
       </button>
@@ -70,7 +111,10 @@
       <button class="toolbar-btn" data-action="justifyright" title="Align Right">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zm-6-4v2h18V3H3z"/></svg>
       </button>
-      <div class="toolbar-separator"></div>
+      
+      <div class="toolbar-sep"></div>
+      
+      <!-- Comments -->
       <button class="toolbar-btn" id="toolbar-comment-btn" title="Add comment">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </button>
