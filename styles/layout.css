@@ -1,18 +1,16 @@
 :root {
-  --header-bg: #fff;
-  --toolbar-bg: #fff;
+  --header-bg: #ffffff;
+  --toolbar-bg: #ffffff;
   --canvas-bg: #f8f9fa;
   --border-subtle: #e0e0e0;
   --border-strong: #dadce0;
   --text-primary: #202124;
   --text-secondary: #5f6368;
   --accent-blue: #1a73e8;
-  --tabs-width: 260px;
-  --rail-width: 56px;
-  --panel-width: 300px;
-  --page-width: 8.5in;
-  --header-h: 116px;
-  --ruler-h: 22px;
+  --tabs-width: 240px;
+  --panel-width: 320px;
+  --page-width: 816px; /* 8.5 inches at standard desktop scale */
+  --ruler-h: 20px;
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +20,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-family: Arial, sans-serif;
   color: var(--text-primary);
   background: var(--canvas-bg);
 }
@@ -33,57 +31,53 @@ html, body {
   flex-direction: column;
 }
 
-/* ---------- App shell / header ---------- */
 .app-header {
   flex: 0 0 auto;
   background: var(--header-bg);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-strong);
+  z-index: 10;
 }
 
 .workspace-wrapper {
   flex: 1 1 auto;
   display: flex;
+  flex-direction: row;
   width: 100%;
   overflow: hidden;
   position: relative;
 }
 
-/* Document tabs sidebar */
+/* Three-Column Application Layout System */
 .tabs-sidebar {
   flex: 0 0 var(--tabs-width);
   width: var(--tabs-width);
-  background: var(--canvas-bg);
-  border-right: 1px solid var(--border-subtle);
-  padding: 12px 12px 0;
+  background: #ffffff;
+  border-right: 1px solid var(--border-strong);
+  padding: 16px 12px;
   overflow-y: auto;
-  position: relative;
 }
 .tabs-sidebar[hidden] { display: none; }
 
-/* Center Column: independently scrolling document canvas */
 .doc-canvas {
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 32px 0 200px;
+  background: var(--canvas-bg);
+  padding: 20px 0 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  scroll-behavior: smooth;
 }
 
-/* Right Column */
 .side-panel {
-  flex: 0 0 auto;
-  overflow-y: auto;
+  flex: 0 0 var(--panel-width);
+  width: var(--panel-width);
   background: var(--canvas-bg);
+  border-left: 1px solid var(--border-strong);
+  overflow-y: auto;
 }
 
-@media (max-width: 900px) {
-  .tabs-sidebar { display: none; }
-}
-
-/* ---------- Version history full-screen overlay ---------- */
+/* Version History View Overlays */
 .version-history-view {
   position: fixed;
   inset: 0;
@@ -94,23 +88,11 @@ html, body {
 }
 .version-history-view[hidden] { display: none; }
 
-.vh-body {
-  flex: 1 1 auto;
-  display: flex;
-  overflow: hidden;
-}
-
-.vh-canvas {
-  padding-top: 32px;
-}
-
 .vh-panel {
-  flex: 0 0 320px;
-  width: 320px;
-  background: #fff;
-  border-left: 1px solid var(--border-subtle);
-  padding: 20px 20px 0;
+  flex: 0 0 var(--panel-width);
+  width: var(--panel-width);
+  background: #ffffff;
+  border-left: 1px solid var(--border-strong);
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  padding: 16px;
 }
