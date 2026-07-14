@@ -188,9 +188,6 @@ const CommentsEngine = (() => {
         const anchorExists = document.querySelector(`span[data-comment-id="${c.id}"]`);
         if (anchorExists) {
           activeComments.push([key, c]);
-        } else {
-          // If anchor is gone, we could delete the comment automatically
-          // but we'll keep it for now.
         }
       }
     });
@@ -252,6 +249,12 @@ const CommentsEngine = (() => {
 
       list.appendChild(card);
     });
+
+    // AUTOMATICALLY OPEN SIDEBAR: If there are active comments, show the sidebar
+    const sidebar = document.getElementById('comments-sidebar');
+    if (sidebar && activeComments.length > 0) {
+        sidebar.hidden = false;
+    }
   }
 
   // ------------------------------
