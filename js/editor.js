@@ -288,15 +288,13 @@ const EditorEngine = (() => {
     }
   }
 
- return {
+return {
     getTabs,
     getActiveTabId,
     renderTabsSidebar,
     loadActiveTabContent,
     createNewTab,
     forceHydrateAllContent,
-    // NEW: Expose switchTab for history restoration
-    switchTab: switchTab,
-    // NEW: Expose getTabs for history engine
-    getTabs: getTabs
+    switchTab,          // <-- ADD THIS
+    getTabs             // <-- ADD THIS (already there but ensure it's included)
 };
