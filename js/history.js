@@ -7,7 +7,7 @@
 const outlineContent = `<h2>Persuasive Essay Outline</h2><ul><li>Intro</li><li>Body 1</li><li>Conclusion</li></ul>`;
 const introContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilisations around the world have independantly developed religious traditions, suggesting that these beliefs address something fundamental about human nature.</p>`;
 const bodyContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilisations around the world have independantly developed religious traditions...</p><p>Religion has long served as one of humanity's most influential systems for moral education.</p>`;
-const finalContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p><br><p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables...</p>`;
+const finalContent = `<h2>The Wasted Potential of Religion</h2><p class="vh-edit-you"><span class="vh-edit-label">You</span>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p><br><p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables...</p>`;
 const brainstormContent = `<h2>Brainstorming Notes</h2><ul><li><b>Theme:</b> Utility vs Truth</li><li><b>Key thinkers:</b> Durkheim, Haidt</li></ul>`;
 
 // ============================================================
@@ -33,7 +33,7 @@ const documentHistory = [
         dateObj: new Date('2026-05-15T16:00:00'),
         displayDate: "May 15, 4:00 p.m.",
         dayGroup: "Friday",
-        author: "Marcus Le Van Mao élève",
+        author: "Marcus Le Van Mao",
         authorColor: "#0f9d58",
         description: "Edited: Format modifier applied",
         tabsState: [
@@ -239,12 +239,15 @@ function previewVersion(versionId) {
         const activeTab = version.tabsState.find(t => t.id === currentlyPreviewingTabId) || version.tabsState[0];
         const canvas = document.getElementById('vh-canvas');
         if (canvas) {
-            canvas.innerHTML = `
-                <div class="vh-edit-block" style="background-color: ${version.authorColor}15; color: ${version.authorColor}; padding: 2px 0; position: relative; border-radius: 2px;">
-                    <span class="vh-edit-author" style="position: absolute; top: -16px; left: 0; font-size: 10px; color: ${version.authorColor}; white-space: nowrap;">${version.author}</span>
-                    <div style="color: black;">${activeTab.content}</div>
-                </div>
-            `;
+            const isLatest = documentHistory.length > 0 && version.id === documentHistory[0].id;
+            let html = activeTab.content;
+            if (!isLatest) {
+                // Older snapshots predate the "You" edit pass — render Marcus's plain text without it.
+                html = html
+                    .replace(/\s*class="vh-edit-you"/g, '')
+                    .replace(/<span class="vh-edit-label">.*?<\/span>/g, '');
+            }
+            canvas.innerHTML = html;
         }
     }
 }
