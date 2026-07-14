@@ -1,43 +1,48 @@
 /**
- * app.js — Global State Orchestrator
+ * app.js — App Orchestrator & Rich Interactive Layout Handlers
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Application Content Components
   EditorEngine.renderTabsSidebar();
   EditorEngine.loadActiveTabContent();
   CommentsEngine.bindSelectionListener();
 
-  // Bind Sidebar + Add Tab functionality
   const addTabBtn = document.getElementById('add-tab-btn');
   if (addTabBtn) {
     addTabBtn.addEventListener('click', () => EditorEngine.createNewTab());
   }
 
-  // Connect rich formatting toolbar items
+  // Connect completely extended toolbar action listeners (execCommand integration)
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
+      
       if (action === 'bold' || action === 'italic' || action === 'underline') {
         document.execCommand(action, false, null);
         HistoryEngine.captureSnapshot(`Format modifier applied: ${action}`);
       } else if (action === 'undo' || action === 'redo') {
         document.execCommand(action, false, null);
+      } else if (action === 'justifyleft' || action === 'justifycenter' || action === 'justifyright') {
+        document.execCommand(action, false, null);
+        HistoryEngine.captureSnapshot(`Alignment format changed`);
+      } else if (action === 'forecolor') {
+        document.execCommand('foreColor', false, '#ea4335');
+        HistoryEngine.captureSnapshot(`Changed text color to red`);
+      } else if (action === 'hilitecolor') {
+        document.execCommand('hiliteColor', false, '#fff475');
+        HistoryEngine.captureSnapshot(`Applied text highlight tint`);
       }
     });
   });
 
-  // Connect Comment Panel Icon launcher
   const commentBtn = document.getElementById('toolbar-comment-btn');
   if (commentBtn) {
     commentBtn.addEventListener('click', () => CommentsEngine.promptForCommentOnSelection());
   }
 
-  // Hook Version History View overlays
   const historyBtn = document.getElementById('history-btn');
   const vhOverlay = document.getElementById('version-history-view');
   const vhBackBtn = document.getElementById('vh-back-btn');
   
-  // Custom Modal Confirmation selectors
   const confirmModal = document.getElementById('confirm-modal');
   const restoreTriggerBtn = document.getElementById('vh-restore-trigger-btn');
   const modalCancelBtn = document.getElementById('modal-cancel-btn');
@@ -45,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (historyBtn && vhOverlay) {
     historyBtn.addEventListener('click', () => {
-      // Establish initial track log selection layout defaults upon opening panel
       HistoryEngine.previewSnapshot(0);
       vhOverlay.hidden = false;
     });
@@ -57,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Wire custom inline dialog logic (Fully replaces standard window.confirm blocks)
   if (restoreTriggerBtn && confirmModal) {
     restoreTriggerBtn.addEventListener('click', () => {
       confirmModal.hidden = false;
@@ -77,10 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
         HistoryEngine.rollbackTo(targetIdx);
       }
       confirmModal.hidden = true;
-      vhOverlay.hidden = true; // Return to workspace view
+      vhOverlay.hidden = true; 
     });
   }
 
-  // Capture baseline startup document footprint 
   HistoryEngine.captureSnapshot('Document session opened');
 });
