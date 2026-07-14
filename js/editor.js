@@ -1,11 +1,18 @@
+// js/editor.js
 /**
  * editor.js — Multi-Tab Architecture with Live Custom Renaming Engine
  */
+
+// Define the initial document content that was missing!
+const initialDocContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
+  <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance.</p>
+</div>`;
+
 const EditorEngine = (() => {
   const documentTabs = [
     {
       id: "tab_1",
-      title: "The Wasted Potential of Religion",
+      title: "The Utility of Gods",
       htmlContent: initialDocContent
     }
   ];
@@ -22,7 +29,9 @@ const EditorEngine = (() => {
     activeTabId = id;
     renderTabsSidebar();
     loadActiveTabContent();
-    HistoryEngine.captureSnapshot('Created a new tab');
+    if (typeof HistoryEngine !== 'undefined') {
+      HistoryEngine.captureSnapshot('Created a new tab');
+    }
   }
 
   function deleteTab(id, event) {
@@ -39,7 +48,9 @@ const EditorEngine = (() => {
 
     renderTabsSidebar();
     loadActiveTabContent();
-    HistoryEngine.captureSnapshot('Deleted a tab');
+    if (typeof HistoryEngine !== 'undefined') {
+      HistoryEngine.captureSnapshot('Deleted a tab');
+    }
   }
 
   function renderTabsSidebar() {
@@ -70,16 +81,20 @@ const EditorEngine = (() => {
       const input = row.querySelector('.tab-name-input');
       input.addEventListener('change', () => {
         tab.title = input.value;
-        // Update document title input at top header of the workspace
         const docTitleInput = document.querySelector('.doc-title');
         if (docTitleInput && isActive) {
           docTitleInput.value = tab.title;
         }
-        HistoryEngine.captureSnapshot(`Renamed tab to "${tab.title}"`);
+        if (typeof HistoryEngine !== 'undefined') {
+          HistoryEngine.captureSnapshot(`Renamed tab to "${tab.title}"`);
+        }
       });
 
       if (documentTabs.length > 1) {
-        row.querySelector('.tab-close-btn').addEventListener('click', (e) => deleteTab(tab.id, e));
+        const closeBtn = row.querySelector('.tab-close-btn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', (e) => deleteTab(tab.id, e));
+        }
       }
 
       container.appendChild(row);
@@ -94,10 +109,9 @@ const EditorEngine = (() => {
     const tab = documentTabs.find(t => t.id === activeTabId);
     if (!tab) return;
 
-    // Synchronize top toolbar document title as well!
     const docTitleInput = document.querySelector('.doc-title');
     if (docTitleInput) {
-        docTitleInput.value = tab.title;
+      docTitleInput.value = tab.title;
     }
 
     const page = document.createElement('div');
@@ -108,23 +122,33 @@ const EditorEngine = (() => {
 
     page.addEventListener('input', () => {
       tab.htmlContent = page.innerHTML;
-      HistoryEngine.scheduleSnapshot('Auto-saved layout edit');
+      if (typeof HistoryEngine !== 'undefined') {
+        HistoryEngine.scheduleSnapshot('Auto-saved layout edit');
+      }
     });
 
     target.appendChild(page);
-    
+
     const pageNum = document.createElement('div');
     pageNum.className = 'page-number';
     pageNum.textContent = '1';
     target.appendChild(pageNum);
 
-    // Refresh dynamic comments specifically matching this tab!
-    CommentsEngine.renderCommentCards();
+    // Re-render comments for this tab
+    if (typeof CommentsEngine !== 'undefined') {
+      CommentsEngine.renderCommentCards();
+    }
   }
 
+  // Expose the tabs array for other modules
+  function getTabs() { return documentTabs; }
+  function getActiveTabId() { return activeTabId; }
+  function setActiveTabId(id) { activeTabId = id; }
+
   return {
-    getTabs() { return documentTabs; },
-    getActiveTabId() { return activeTabId; },
+    getTabs,
+    getActiveTabId,
+    setActiveTabId,
     createNewTab,
     renderTabsSidebar,
     loadActiveTabContent
