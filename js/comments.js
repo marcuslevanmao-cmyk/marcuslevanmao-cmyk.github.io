@@ -9,13 +9,22 @@ const CommentsEngine = (() => {
   let activePopup = null;
 
   // ------------------------------
-  // 1. Selection Listener
+  // 1. Selection Listener (now attached to the editable page)
   // ------------------------------
   function bindSelectionListener() {
-    const canvas = document.getElementById('doc-canvas');
-    if (!canvas) return;
+    // Use event delegation on the pages-container, because the .doc-page is recreated on tab switches
+    const pagesContainer = document.getElementById('pages-container');
+    if (!pagesContainer) return;
 
-    canvas.addEventListener('mouseup', () => {
+    pagesContainer.addEventListener('mouseup', (e) => {
+      // Check if the click is inside a .doc-page
+      const page = e.target.closest('.doc-page');
+      if (!page) {
+        pendingRange = null;
+        reflectAddCommentButtonState();
+        return;
+      }
+
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
         pendingRange = null;
@@ -30,10 +39,11 @@ const CommentsEngine = (() => {
         return;
       }
 
-      const node = range.commonAncestorContainer;
-      const insidePage = node.nodeType === Node.ELEMENT_NODE
-        ? node.closest('.doc-page')
-        : node.parentElement?.closest('.doc-page');
+      // Ensure the selection is entirely inside the page
+      const container = range.commonAncestorContainer;
+      const insidePage = container.nodeType === Node.ELEMENT_NODE
+        ? container.closest('.doc-page')
+        : container.parentElement?.closest('.doc-page');
 
       if (insidePage) {
         pendingRange = range.cloneRange();
@@ -43,7 +53,7 @@ const CommentsEngine = (() => {
       reflectAddCommentButtonState();
     });
 
-    // Clear selection on click outside
+    // Clear selection when clicking outside the page
     document.addEventListener('mousedown', (e) => {
       if (!e.target.closest('.doc-page') && !e.target.closest('.comment-floating-composer')) {
         pendingRange = null;
@@ -68,9 +78,16 @@ const CommentsEngine = (() => {
 
     const popup = document.createElement('div');
     popup.className = 'comment-floating-composer';
+    // Position near the selection, but keep it in view
+    let left = rangeRect.left + window.scrollX;
+    let top = rangeRect.bottom + window.scrollY + 10;
+    // Ensure it doesn't go off-screen
+    if (left + 340 > window.innerWidth) left = window.innerWidth - 350;
+    if (top + 200 > window.innerHeight) top = rangeRect.top + window.scrollY - 200;
+
     popup.style.position = 'fixed';
-    popup.style.left = Math.min(rangeRect.left, window.innerWidth - 360) + 'px';
-    popup.style.top = (rangeRect.bottom + window.scrollY + 10) + 'px';
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
     popup.style.width = '340px';
     popup.style.zIndex = '1000';
     popup.innerHTML = `
@@ -109,6 +126,7 @@ const CommentsEngine = (() => {
       const activeTabId = EditorEngine.getActiveTabId();
       const canvasEl = document.getElementById('doc-canvas');
       const canvasRect = canvasEl.getBoundingClientRect();
+      // Use the range's bounding rect relative to the canvas (with scroll)
       const relativeTop = rangeRect.top - canvasRect.top + window.scrollY;
 
       comments.set(cid, {
