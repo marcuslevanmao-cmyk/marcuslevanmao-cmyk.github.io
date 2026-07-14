@@ -1,5 +1,5 @@
 // js/app.js
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
   if (typeof EditorEngine !== 'undefined') {
     EditorEngine.renderTabsSidebar();
     EditorEngine.loadActiveTabContent();
