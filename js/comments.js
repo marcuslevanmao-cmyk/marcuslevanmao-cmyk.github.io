@@ -102,10 +102,9 @@ const CommentsEngine = (() => {
     list.innerHTML = '';
     if (activeComposer) list.appendChild(activeComposer);
 
-    comments.forEach(c => {
+    comments.forEach((c, key) => {
       if (c.resolved) return;
       
-      // Only render comments that match elements currently living inside active tab DOM canvas
       const anchorExists = document.querySelector(`span[data-comment-id="${c.id}"]`);
       if (!anchorExists) return;
 
@@ -120,13 +119,26 @@ const CommentsEngine = (() => {
         <p class="comment-body">${c.body}</p>
         <div class="comment-actions">
           <button data-act="resolve">Resolve</button>
+          <button data-act="delete" style="color: #ea4335; margin-left: 10px; background: none; border: none; cursor: pointer; font-size: 12px;">Delete</button>
         </div>
       `;
+      
+      // Resolve action
       card.querySelector('[data-act="resolve"]').addEventListener('click', () => {
         c.resolved = true;
         document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => el.className = 'comment-anchor resolved');
         card.remove();
       });
+
+      // Delete action (Removes span wrapper entirely)
+      card.querySelector('[data-act="delete"]').addEventListener('click', () => {
+        document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => {
+            el.replaceWith(...el.childNodes); // Strips the span, leaves the text
+        });
+        comments.delete(key);
+        card.remove();
+      });
+
       list.appendChild(card);
     });
   }
