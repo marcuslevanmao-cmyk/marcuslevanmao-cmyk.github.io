@@ -1,59 +1,86 @@
 /**
- * app.js — Main Initialization Engine
+ * app.js — Global State Orchestrator
  */
 document.addEventListener('DOMContentLoaded', () => {
-  EditorEngine.initFirstPage();
+  // Initialize Application Content Components
+  EditorEngine.renderTabsSidebar();
+  EditorEngine.loadActiveTabContent();
   CommentsEngine.bindSelectionListener();
 
-  // Connect formatting toolbar controls
+  // Bind Sidebar + Add Tab functionality
+  const addTabBtn = document.getElementById('add-tab-btn');
+  if (addTabBtn) {
+    addTabBtn.addEventListener('click', () => EditorEngine.createNewTab());
+  }
+
+  // Connect rich formatting toolbar items
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
       if (action === 'bold' || action === 'italic' || action === 'underline') {
         document.execCommand(action, false, null);
-        HistoryEngine.captureSnapshot(`Applied Format: ${action}`);
+        HistoryEngine.captureSnapshot(`Format modifier applied: ${action}`);
       } else if (action === 'undo' || action === 'redo') {
         document.execCommand(action, false, null);
       }
     });
   });
 
-  // Wire Comment Icon action trigger
+  // Connect Comment Panel Icon launcher
   const commentBtn = document.getElementById('toolbar-comment-btn');
   if (commentBtn) {
     commentBtn.addEventListener('click', () => CommentsEngine.promptForCommentOnSelection());
   }
 
-  // Sidebar utility toggle hooks
-  const outlineBackBtn = document.getElementById('tabs-back-btn');
-  const outlineSidebar = document.getElementById('tabs-sidebar');
-  if (outlineBackBtn && outlineSidebar) {
-    outlineBackBtn.addEventListener('click', () => outlineSidebar.style.display = 'none');
-  }
-
-  // Full Overlay Version History layout controls
+  // Hook Version History View overlays
   const historyBtn = document.getElementById('history-btn');
   const vhOverlay = document.getElementById('version-history-view');
   const vhBackBtn = document.getElementById('vh-back-btn');
-  const vhCanvas = document.getElementById('vh-canvas');
+  
+  // Custom Modal Confirmation selectors
+  const confirmModal = document.getElementById('confirm-modal');
+  const restoreTriggerBtn = document.getElementById('vh-restore-trigger-btn');
+  const modalCancelBtn = document.getElementById('modal-cancel-btn');
+  const modalConfirmBtn = document.getElementById('modal-confirm-btn');
 
   if (historyBtn && vhOverlay) {
     historyBtn.addEventListener('click', () => {
-      const livePages = document.querySelectorAll('.doc-page');
-      vhCanvas.innerHTML = '';
-      livePages.forEach(p => {
-        const copy = p.cloneNode(true);
-        copy.contentEditable = 'false';
-        vhCanvas.appendChild(copy);
-      });
+      // Establish initial track log selection layout defaults upon opening panel
+      HistoryEngine.previewSnapshot(0);
       vhOverlay.hidden = false;
     });
   }
 
   if (vhBackBtn && vhOverlay) {
-    vhBackBtn.addEventListener('click', () => vhOverlay.hidden = true);
+    vhBackBtn.addEventListener('click', () => {
+      vhOverlay.hidden = true;
+    });
   }
 
-  // Initial State capture tracking run
-  HistoryEngine.captureSnapshot('Document launched');
+  // Wire custom inline dialog logic (Fully replaces standard window.confirm blocks)
+  if (restoreTriggerBtn && confirmModal) {
+    restoreTriggerBtn.addEventListener('click', () => {
+      confirmModal.hidden = false;
+    });
+  }
+
+  if (modalCancelBtn) {
+    modalCancelBtn.addEventListener('click', () => {
+      confirmModal.hidden = true;
+    });
+  }
+
+  if (modalConfirmBtn && vhOverlay && confirmModal) {
+    modalConfirmBtn.addEventListener('click', () => {
+      const targetIdx = HistoryEngine.getSelectedPreviewIndex();
+      if (targetIdx !== -1) {
+        HistoryEngine.rollbackTo(targetIdx);
+      }
+      confirmModal.hidden = true;
+      vhOverlay.hidden = true; // Return to workspace view
+    });
+  }
+
+  // Capture baseline startup document footprint 
+  HistoryEngine.captureSnapshot('Document session opened');
 });
