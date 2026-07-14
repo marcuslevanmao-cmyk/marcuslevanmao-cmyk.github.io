@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Utility of Gods</title>
+<title>On the Stoics</title>
 <link rel="stylesheet" href="styles/layout.css">
 <link rel="stylesheet" href="styles/components.css">
 <link rel="stylesheet" href="styles/comments.css">
@@ -26,10 +26,8 @@
       </div>
       <div class="title-block">
         <div class="title-row">
-          <input type="text" class="doc-title" value="The Utility of Gods" aria-label="Document Title">
-          <button class="star-btn" title="Star document" aria-label="Star document">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          </button>
+          <input type="text" class="doc-title" value="On the Stoics" aria-label="Document Title">
+          <button class="star-btn" title="Star document"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
         </div>
         <div class="menu-bar">
           <button type="button" class="menu-item">File</button>
@@ -38,7 +36,7 @@
           <button type="button" class="menu-item">Insert</button>
           <button type="button" class="menu-item">Format</button>
           <button type="button" class="menu-item">Tools</button>
-          <button type="button" id="history-open-btn" class="menu-item style-history-trigger" style="color: var(--accent-blue); font-weight: bold;">Version History (Ctrl+H)</button>
+          <button type="button" id="history-open-btn" class="menu-item">Version History</button>
         </div>
       </div>
     </div>
@@ -48,26 +46,18 @@
       <button class="toolbar-btn" data-action="redo" title="Redo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg></button>
       <button class="toolbar-btn" data-action="print" title="Print"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg></button>
       <div class="toolbar-sep"></div>
-      <button class="toolbar-btn" data-action="comment" title="Add Comment"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+      <button class="toolbar-btn" data-action="comment" title="Insert Comment"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
     </div>
   </header>
 
   <div class="workspace-wrapper">
-    
     <aside class="tabs-sidebar" id="tabs-sidebar">
-      <button class="tab-btn active" data-tab="essay" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px; border: 1px solid var(--border-subtle); background: #fff; border-radius: 6px; cursor: pointer; text-align: left; font-family: inherit; font-size: 14px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        The Utility of Gods
-      </button>
-      <button class="tab-btn" data-tab="brainstorm" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px; border: 1px solid transparent; background: transparent; border-radius: 6px; cursor: pointer; text-align: left; font-family: inherit; font-size: 14px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        Brainstorm Material
-      </button>
+      <button class="tab-btn active" data-tab="tab1" id="tabs-back-btn">Document Overview</button>
     </aside>
 
     <main class="doc-canvas" id="doc-canvas"></main>
 
-    <aside class="side-panel" id="side-panel" hidden>
+    <aside class="side-panel" id="side-panel">
       <div class="comments-panel" id="comments-panel"></div>
     </aside>
   </div>
@@ -75,13 +65,13 @@
 
 <div class="version-history-view" id="version-history-view" hidden>
   <div class="vh-header">
-    <button class="vh-back-btn" id="vh-back-btn" title="Exit history view tracking mode">
+    <button class="vh-back-btn" id="vh-back-btn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     </button>
     <span class="vh-title" id="vh-title-date">Today</span>
   </div>
   <div class="vh-body">
-    <div class="doc-canvas vh-canvas" id="vh-canvas"></div>
+    <main class="doc-canvas vh-canvas" id=\"vh-canvas\"></main>
     <aside class="vh-panel">
       <div class="version-list" id="version-list"></div>
     </aside>
