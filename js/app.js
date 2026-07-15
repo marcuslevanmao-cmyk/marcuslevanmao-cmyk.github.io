@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   CommentsEngine.bindSelectionListener();
   
   // Quick timeout yields document generation cycle time to calculate offsets accurately
-  setTimeout(() => { CommentsEngine.renderCommentCards(); }, 100);
+setTimeout(CommentsEngine.renderCommentCards, 100);
 
   // ----- Tab Management -----
   document.getElementById('add-tab-btn')?.addEventListener('click', () => {
