@@ -44,7 +44,7 @@ html, body {
   display: flex;
   flex-direction: row;
   width: 100%;
-  overflow: visible;
+  overflow: hidden; /* keep scroll in canvas only */
   position: relative;
 }
 
