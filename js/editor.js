@@ -443,3 +443,79 @@ const EditorEngine = (() => {
     getCombinedHtml
   };
 })();
+// ============================================================
+// SIMPLE COMMENT SYSTEM (integrated at user's request)
+// ============================================================
+
+// 1. Create an empty array to store our comments
+let documentComments = [];
+
+// 2. The function to draw the comments on the screen
+function renderComments() {
+  const sidebar = document.getElementById('comments-sidebar');
+  if (!sidebar) return; // Failsafe if the sidebar isn't found
+  
+  // Find the comments list container inside the sidebar
+  const listContainer = sidebar.querySelector('.comments-list') || sidebar;
+  listContainer.innerHTML = ''; // Clear before redrawing
+
+  if (documentComments.length === 0) {
+    listContainer.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: #5f6368; font-size: 14px;">
+        No comments yet. Click the comment button to add one.
+      </div>
+    `;
+    return;
+  }
+
+  documentComments.forEach(comment => {
+    const card = document.createElement('div');
+    card.className = 'comment-card';
+    card.innerHTML = `
+      <div class="comment-header">
+        <span class="comment-author">${comment.author}</span>
+        <span class="comment-date">${comment.date}</span>
+      </div>
+      <div class="comment-body">${comment.text}</div>
+    `;
+    listContainer.appendChild(card);
+  });
+}
+
+// 3. Wire up the button
+function setupCommentingSystem() {
+  const commentBtn = document.getElementById('add-comment-btn');
+
+  if (commentBtn) {
+    // Remove any existing listeners to avoid duplicates
+    const newBtn = commentBtn.cloneNode(true);
+    commentBtn.parentNode.replaceChild(newBtn, commentBtn);
+    
+    newBtn.addEventListener('click', () => {
+      const commentText = prompt("Type your comment here:");
+
+      if (commentText && commentText.trim()) {
+        const now = new Date();
+        
+        documentComments.push({
+          id: Date.now(),
+          author: "You",
+          date: now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: commentText.trim()
+        });
+
+        renderComments();
+      }
+    });
+  } else {
+    console.warn("Could not find the comment button. Make sure it has id='add-comment-btn'");
+  }
+}
+
+// 4. Initialize the system
+setupCommentingSystem();
+
+// Also re-render comments when the sidebar is opened (for consistency)
+// This is triggered by the existing comment button toggle in app.js
+// We'll also expose renderComments globally so it can be called elsewhere
+window.renderComments = renderComments;
