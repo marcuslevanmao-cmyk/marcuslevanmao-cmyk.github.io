@@ -7,10 +7,9 @@ const CommentsEngine = (() => {
   let pendingRange = null;
   let idCounter = 0;
   let activePopup = null;
-  let lastActivePage = null;
 
   // ------------------------------
-  // 1. Selection Listener with Floating Button
+  // 1. Selection Listener
   // ------------------------------
   function bindSelectionListener() {
     const pagesContainer = document.getElementById('pages-container');
@@ -20,7 +19,6 @@ const CommentsEngine = (() => {
       const page = e.target.closest('.doc-page');
       if (!page) {
         pendingRange = null;
-        lastActivePage = null;
         reflectAddCommentButtonState();
         return;
       }
@@ -28,7 +26,6 @@ const CommentsEngine = (() => {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
         pendingRange = null;
-        lastActivePage = null;
         reflectAddCommentButtonState();
         return;
       }
@@ -36,51 +33,45 @@ const CommentsEngine = (() => {
       const range = sel.getRangeAt(0);
       if (!range.toString().trim()) {
         pendingRange = null;
-        lastActivePage = null;
         reflectAddCommentButtonState();
         return;
       }
 
-      // Success: valid selection
-      pendingRange = range;
-      lastActivePage = page;
-      reflectAddCommentButtonState(page);
+      const container = range.commonAncestorContainer;
+      const insidePage = container.nodeType === Node.ELEMENT_NODE
+        ? container.closest('.doc-page')
+        : container.parentElement?.closest('.doc-page');
+
+      if (insidePage) {
+        pendingRange = range.cloneRange();
+      } else {
+        pendingRange = null;
+      }
+      reflectAddCommentButtonState();
     });
 
-    // Hide the button when clicking outside the page (but not on the button itself)
+    // Clear selection when clicking outside, EXCEPT when clicking comment elements/buttons
     document.addEventListener('mousedown', (e) => {
-      if (e.target.closest('#floating-comment-btn')) return;
-      if (!e.target.closest('.doc-page')) {
+      const isPage = e.target.closest('.doc-page');
+      const isComposer = e.target.closest('.comment-floating-composer');
+      const isToolbarBtn = e.target.closest('#add-comment-btn');
+      const isSidebarBtn = e.target.closest('#sidebar-add-comment-btn');
+
+      if (!isPage && !isComposer && !isToolbarBtn && !isSidebarBtn) {
         pendingRange = null;
-        lastActivePage = null;
         reflectAddCommentButtonState();
       }
     });
   }
 
-  // ------------------------------
-  // 2. Position the floating button
-  // ------------------------------
-  function reflectAddCommentButtonState(activePage) {
-    const btn = document.getElementById('floating-comment-btn');
-    if (!btn) return;
-
-    if (!pendingRange || !activePage) {
-      btn.hidden = true;
-      return;
-    }
-
-    const textRect = pendingRange.getBoundingClientRect();
-    const pageRect = activePage.getBoundingClientRect();
-
-    // Position to the right of the page, aligned with the top of the selection
-    btn.style.top = `${textRect.top - 8}px`; // slight vertical offset for centering
-    btn.style.left = `${pageRect.right + 16}px`;
-    btn.hidden = false;
+  function reflectAddCommentButtonState() {
+    // Sync with the actual toolbar button ID in your HTML
+    const btn = document.getElementById('add-comment-btn');
+    if (btn) btn.disabled = !pendingRange;
   }
 
   // ------------------------------
-  // 3. Floating Composer (unchanged)
+  // 2. Floating Composer
   // ------------------------------
   function showFloatingComposer(cid, quote, rangeRect) {
     if (activePopup) {
@@ -108,9 +99,11 @@ const CommentsEngine = (() => {
           <div class="avatar">M</div>
           <span class="user-name">Marcus Le Van Mao élève</span>
         </div>
+        
         <div class="card-input-container">
           <input type="text" class="docs-pill-input" placeholder="Comment or add others with @">
         </div>
+        
         <div class="card-actions">
           <button class="btn-text-cancel">Cancel</button>
           <button class="btn-filled-comment" disabled>Comment</button>
@@ -137,24 +130,30 @@ const CommentsEngine = (() => {
       }
     });
 
+    // Support submitting by pressing "Enter" key
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && textarea.value.trim()) {
+        e.preventDefault();
+        commentBtn.click();
+      }
+    });
+
     const cleanUp = () => {
       removeAnchor(cid);
       closePopup();
       pendingRange = null;
-      lastActivePage = null;
       reflectAddCommentButtonState();
     };
 
     cancelBtn.addEventListener('click', cleanUp);
-    popup.querySelector('.close-popup-btn')?.addEventListener('click', cleanUp);
 
     commentBtn.addEventListener('click', () => {
       const body = textarea.value.trim();
       if (!body) return;
 
-      const activeTabId = EditorEngine.getActiveTabId();
+      const activeTabId = typeof EditorEngine !== 'undefined' ? EditorEngine.getActiveTabId() : 'default-tab';
       const canvasEl = document.getElementById('doc-canvas');
-      const canvasRect = canvasEl.getBoundingClientRect();
+      const canvasRect = canvasEl ? canvasEl.getBoundingClientRect() : { top: 0 };
       const relativeTop = rangeRect.top - canvasRect.top + window.scrollY;
 
       comments.set(cid, {
@@ -166,10 +165,13 @@ const CommentsEngine = (() => {
         topOffset: relativeTop
       });
 
+      // Automatically reveal the sidebar so they can see their fresh comment card!
+      const commentsSidebar = document.getElementById('docs-sidebar');
+      if (commentsSidebar) commentsSidebar.hidden = false;
+
       renderCommentCards();
       closePopup();
       pendingRange = null;
-      lastActivePage = null;
       reflectAddCommentButtonState();
     });
   }
@@ -214,10 +216,10 @@ const CommentsEngine = (() => {
   }
 
   // ------------------------------
-  // 4. Render Comment Cards (unchanged)
+  // 3. Hanging Margin Cards Render
   // ------------------------------
   function renderCommentCards() {
-    const activeTabId = EditorEngine.getActiveTabId();
+    const activeTabId = typeof EditorEngine !== 'undefined' ? EditorEngine.getActiveTabId() : 'default-tab';
     const sidebarList = document.getElementById('comments-list');
     if (!sidebarList) return;
     sidebarList.innerHTML = '';
@@ -225,10 +227,8 @@ const CommentsEngine = (() => {
     const activeComments = [];
     comments.forEach((c, key) => {
       if (!c.resolved && c.tabId === activeTabId) {
-        const anchorExists = document.querySelector(`span[data-comment-id="${c.id}"]`);
-        if (anchorExists) {
-          activeComments.push([key, c]);
-        }
+        // Fallback: if the visual text anchor was destroyed, we still show the card
+        activeComments.push([key, c]);
       }
     });
 
@@ -257,7 +257,7 @@ const CommentsEngine = (() => {
       
       card.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
-          <span style="font-weight:500; color:#1f1f1f;">You</span>
+          <span style="font-weight:500; color:#1f1f1f;">Marcus Le Van Mao</span>
           <span style="color:#5f6368; font-size:12px;">${new Date().toLocaleDateString()}</span>
         </div>
         <div style="font-style:italic; color:#5f6368; font-size:13px; margin-bottom:6px; background:#f8f9fa; padding:6px 8px; border-left:2px solid #dadce0;">
@@ -291,14 +291,12 @@ const CommentsEngine = (() => {
   }
 
   // ------------------------------
-  // 5. Public API
+  // 4. Public API
   // ------------------------------
   return {
     bindSelectionListener,
     promptForCommentOnSelection,
     renderCommentCards,
-    closePopup,
-    // expose for testing
-    getPendingRange: () => pendingRange,
+    closePopup
   };
 })();
