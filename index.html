@@ -178,7 +178,7 @@
     .doc-page {
       width: 8.5in;
       min-height: 11in;
-      padding: 1in 1in 150px 1in;  /* Extra bottom padding for longer feel */
+      padding: 1in 1in 150px 1in;
       margin: 2rem auto;
       background-color: #ffffff;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -187,7 +187,7 @@
       outline: none;
       word-wrap: break-word;
       overflow-wrap: break-word;
-      white-space: pre-wrap;      /* Preserve spaces, wraps long words */
+      white-space: pre-wrap;
       position: relative;
       box-sizing: border-box;
     }
@@ -922,73 +922,39 @@
       background-color: rgba(217, 48, 37, 0.05);
     }
 
-    #vh-canvas {
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      word-break: break-word;
-      box-sizing: border-box;
-    }
-    #vh-canvas * {
-      max-width: 100%;
-      box-sizing: border-box;
+    /* ===== History Viewport & Pagination ===== */
+    .history-viewport {
+      flex: 1;
+      background-color: #f1f3f4;
+      overflow-y: auto;
+      padding: 40px 24px 80px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
     }
 
-    /* ===== Hanging Comments in Margin ===== */
-    .margin-comments-track {
-      position: absolute;
-      top: 0;
-      right: -280px; /* hang out in the right margin */
-      width: 240px;
-      height: 100%;
-      pointer-events: none; /* allow clicks through empty space */
-    }
-    .margin-comment-card {
-      position: absolute;
-      pointer-events: auto;
+    .history-page {
       background: #ffffff;
-      border: 1px solid #dadce0;
-      border-radius: 8px;
-      padding: 12px;
-      width: 100%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-      transition: box-shadow 0.15s ease-in-out, border-color 0.15s;
-      font-size: 13px;
-      line-height: 1.4;
-      cursor: default;
-      left: 0;
+      width: 8.5in;
+      min-height: 11in;
+      padding: 1in 1in 150px 1in;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-sizing: border-box;
+      position: relative;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
-    .margin-comment-card:hover {
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      border-color: #1a73e8;
-    }
-    .margin-comment-card .margin-comment-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .margin-comment-card .margin-comment-avatar {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #1a73e8;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: bold;
-    }
-    .margin-comment-card .margin-comment-author {
-      font-weight: 500;
-      color: #1f1f1f;
+
+    .history-page .page-number-label {
+      position: absolute;
+      bottom: 24px;
+      right: 40px;
       font-size: 12px;
-    }
-    .margin-comment-card .margin-comment-text {
-      color: #3c4043;
-      font-size: 12px;
-      word-break: break-word;
-      margin-top: 2px;
+      color: #9ca3af;
+      user-select: none;
     }
 
     /* ===== Large Essay Title ===== */
@@ -997,7 +963,7 @@
       font-size: 2.5rem;
       font-weight: 700;
       color: #111827;
-      margin-top: 20px;
+      margin-top: 0;
       margin-bottom: 10px;
       text-align: left;
     }
@@ -1008,12 +974,17 @@
       margin-bottom: 30px;
     }
 
-    /* Force green for Marcus */
     .vh-author-dot.marcus-green {
       background-color: #0f9d58 !important;
     }
     .vh-item .vh-author-dot {
-      background-color: #0f9d58; /* default green for all */
+      background-color: #0f9d58;
+    }
+
+    /* Ensure history pages don't overflow */
+    .history-page * {
+      max-width: 100%;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -1232,8 +1203,9 @@
         <div id="vh-tabs-container"></div>
       </aside>
 
-      <main style="flex:1; overflow:auto; padding:24px; display:flex; flex-direction:column; align-items:center; background:var(--canvas-bg);">
-        <div id="vh-canvas" style="width:816px; background:#fff; padding:96px; min-height:1056px; box-shadow:0 1px 3px rgba(60,64,67,0.15); border:1px solid var(--border-subtle);"></div>
+      <!-- History Viewport with pagination -->
+      <main class="history-viewport" id="history-viewport">
+        <div id="vh-canvas"></div>
       </main>
 
       <aside style="width:280px; border-left:1px solid var(--border-strong); background:#fff; display:flex; flex-direction:column; flex-shrink:0;">
@@ -1599,6 +1571,12 @@ const EditorEngine = (() => {
     }
   }
 
+  // Expose splitter for history
+  function splitHistoryContent(html) {
+    const pageHeight = 1056;
+    return splitContentIntoPages(html, pageHeight);
+  }
+
   return {
     getTabs,
     getActiveTabId,
@@ -1608,13 +1586,14 @@ const EditorEngine = (() => {
     switchTab,
     saveCurrentTabContent,
     getCombinedHtml,
-    saveToLocalStorage
+    saveToLocalStorage,
+    splitHistoryContent
   };
 })();
 </script>
 
 <script>
-// js/history.js (green forced, total edits updated)
+// js/history.js (green forced, total edits updated, pagination for history)
 const fullEssayContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
   <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p>
 </div>`;
@@ -1635,7 +1614,7 @@ const documentHistory = [
         displayDate: "May 15, 4:00 p.m.",
         dayGroup: "Friday",
         author: "Marcus Le Van Mao",
-        authorColor: "#0f9d58", // green
+        authorColor: "#0f9d58",
         description: "Edited: Format modifier applied",
         tabsState: [
             { id: 'tab_1', title: 'The Utility of Gods', content: fullEssayContent },
@@ -1717,7 +1696,7 @@ const HistoryEngine = (() => {
             displayDate: displayDate,
             dayGroup: dayGroup,
             author: "Marcus Le Van Mao",
-            authorColor: "#0f9d58", // force green for all snapshots
+            authorColor: "#0f9d58",
             description: description || "Edited",
             tabsState: _getCurrentTabsState()
         };
@@ -1729,7 +1708,6 @@ const HistoryEngine = (() => {
         if (_history.length > 50) _history.pop();
         saveHistoryToStorage(_history);
         renderHistorySidebar();
-        // Update total edits count
         const totalSpan = document.getElementById('vh-total-edits');
         if (totalSpan) totalSpan.textContent = `Total: ${_history.length} edits`;
         return snapshot;
@@ -1796,7 +1774,6 @@ function renderHistorySidebar() {
         const item = document.createElement('div');
         item.className = `vh-item ${isActive ? 'active' : ''}`;
         item.dataset.id = version.id;
-        // Force green dot for Marcus
         const dotColor = version.author === "Marcus Le Van Mao" ? "#0f9d58" : (version.authorColor || "#0f9d58");
         item.innerHTML = `
             <div class="vh-item-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
@@ -1817,7 +1794,6 @@ function renderHistorySidebar() {
         listContainer.appendChild(item);
     });
 
-    // Update total edits count
     const totalSpan = document.getElementById('vh-total-edits');
     if (totalSpan) totalSpan.textContent = `Total: ${currentHistory.length} edits`;
 }
@@ -1867,17 +1843,40 @@ function previewVersion(versionId) {
     const activeTab = version.tabsState.find(t => t.id === currentlyPreviewingTabId) || version.tabsState[0];
     const canvas = document.getElementById('vh-canvas');
     if (canvas) {
-        let html = activeTab.content;
+        // Paginate the content
+        let htmlContent = activeTab.content || '';
         if (version.author === 'You') {
-            html = `<div class="vh-edit-you">
+            htmlContent = `<div class="vh-edit-you">
                       <span class="vh-edit-label">Edited by You</span>
-                      ${html}
+                      ${htmlContent}
                     </div>`;
         }
-        canvas.innerHTML = html;
+
+        // Use the same pagination as main editor
+        const pages = EditorEngine.splitHistoryContent(htmlContent);
+        canvas.innerHTML = ''; // clear
+        pages.forEach((pageHtml, idx) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'history-page';
+            // If first page and content doesn't already have title, inject it
+            if (idx === 0 && !pageHtml.includes('essay-main-title')) {
+                pageDiv.innerHTML = `
+                    <h1 class="essay-main-title">${activeTab.title || 'Untitled'}</h1>
+                    <hr class="title-divider" />
+                    ${pageHtml}
+                `;
+            } else {
+                pageDiv.innerHTML = pageHtml;
+            }
+            // Page number
+            const pageNum = document.createElement('div');
+            pageNum.className = 'page-number-label';
+            pageNum.textContent = `Page ${idx + 1}`;
+            pageDiv.appendChild(pageNum);
+            canvas.appendChild(pageDiv);
+        });
     }
 
-    // Update total edits count
     const totalSpan = document.getElementById('vh-total-edits');
     if (totalSpan) totalSpan.textContent = `Total: ${currentHistory.length} edits`;
 }
@@ -1899,11 +1898,8 @@ window.restoreFullDocumentState = function (savedTabsState) {
 
 function initHistory() {
     renderHistorySidebar();
-    
-    // Auto-select latest version when history opens
     if (currentHistory.length > 0) {
         previewVersion(currentHistory[0].id);
-        // Highlight first item in sidebar
         const firstItem = document.querySelector('.vh-item');
         if (firstItem) firstItem.classList.add('active');
     }
@@ -2041,7 +2037,7 @@ const CommentsEngine = (() => {
     if (page) {
       const pageRect = page.getBoundingClientRect();
       const top = lastRect.top + window.scrollY;
-      const left = pageRect.right + window.scrollX - 45; // Float in margin
+      const left = pageRect.right + window.scrollX - 45;
 
       btn.style.position = 'absolute';
       btn.style.left = left + 'px';
@@ -2223,7 +2219,6 @@ const CommentsEngine = (() => {
     pendingCommentId = null;
   }
 
-  // ===== Dual rendering: margin cards + sidebar list =====
   function renderCommentCards() {
     renderMarginCards();
     renderSidebarList();
@@ -2233,11 +2228,9 @@ const CommentsEngine = (() => {
     const container = document.getElementById('pages-container');
     if (!container) return;
 
-    // Remove old track
     let track = document.getElementById('margin-comments-track');
     if (track) track.remove();
 
-    // Create new track
     track = document.createElement('div');
     track.id = 'margin-comments-track';
     track.className = 'margin-comments-track';
@@ -2257,7 +2250,6 @@ const CommentsEngine = (() => {
       const containerRect = container.getBoundingClientRect();
       const anchorRect = anchor.getBoundingClientRect();
 
-      // Position relative to container
       const top = (anchorRect.top - containerRect.top) + container.scrollTop;
 
       const card = document.createElement('div');
@@ -2271,15 +2263,12 @@ const CommentsEngine = (() => {
         <div class="margin-comment-text">${c.text}</div>
       `;
       card.addEventListener('click', () => {
-        // Scroll to anchor and highlight
         anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
         document.querySelectorAll('.comment-anchor').forEach(a => a.classList.remove('active'));
         anchor.classList.add('active');
-        // Highlight sidebar card
         document.querySelectorAll('.docs-comment-card').forEach(card => card.classList.remove('active-comment'));
         const sidebarCard = document.querySelector(`.docs-comment-card[data-comment-id="${c.id}"]`);
         if (sidebarCard) sidebarCard.classList.add('active-comment');
-        // Open sidebar if closed
         const sidebar = document.getElementById('docs-sidebar');
         if (sidebar) sidebar.hidden = false;
       });
@@ -2358,11 +2347,9 @@ const CommentsEngine = (() => {
           document.querySelectorAll('.docs-comment-card').forEach(c => c.classList.remove('active-comment'));
           card.classList.add('active-comment');
           
-          // Also highlight margin card
           const marginCard = document.querySelector(`.margin-comment-card[data-comment-id="${comment.id}"]`);
           if (marginCard) marginCard.style.borderColor = '#1a73e8';
         }
-        // Open sidebar if hidden
         const sidebar = document.getElementById('docs-sidebar');
         if (sidebar) sidebar.hidden = false;
       });
@@ -2413,7 +2400,6 @@ const CommentsEngine = (() => {
   };
 })();
 
-// Click on comment anchor to open sidebar and highlight
 document.addEventListener('DOMContentLoaded', () => {
   const pagesContainer = document.getElementById('pages-container');
   if (pagesContainer) {
@@ -2444,7 +2430,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 // js/ui-wiring.js — Interactive Formatting, Menu Buttons & Overlay Bindings
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Setup Navigation Actions
   const commentBtn = document.getElementById('comment-btn');
   const docsSidebar = document.getElementById('docs-sidebar');
   const closeCommentsBtn = document.getElementById('close-comments-btn');
@@ -2463,7 +2448,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Setup Version History triggers
   const historyBtn = document.getElementById('history-btn');
   const vhView = document.getElementById('version-history-view');
   const vhBackBtn = document.getElementById('vh-back-btn');
@@ -2473,10 +2457,8 @@ document.addEventListener('DOMContentLoaded', () => {
       EditorEngine.saveCurrentTabContent();
       EditorEngine.saveToLocalStorage();
       renderHistorySidebar();
-      // Auto-select latest version
       if (currentHistory.length > 0) {
         HistoryEngine.previewSnapshot(0);
-        // Highlight first item
         const firstItem = document.querySelector('.vh-item');
         if (firstItem) firstItem.classList.add('active');
       }
@@ -2489,7 +2471,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Setup rollback trigger events
   const vhRestoreBtn = document.getElementById('vh-restore-trigger-btn');
   const confirmModal = document.getElementById('confirm-modal');
   const modalCancelBtn = document.getElementById('modal-cancel-btn');
@@ -2514,7 +2495,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Document Tab Button Hook
   const addTabBtn = document.getElementById('add-tab-btn');
   if (addTabBtn) {
     addTabBtn.addEventListener('click', () => {
@@ -2522,7 +2502,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Document Title Header binding
   const docTitleInput = document.querySelector('.doc-title');
   if (docTitleInput) {
     docTitleInput.addEventListener('input', () => {
@@ -2537,7 +2516,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 6. Hook up Editor formatting tools
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.getAttribute('data-action');
@@ -2563,7 +2541,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Fonts
   const fontSelect = document.getElementById('font-select');
   if (fontSelect) {
     fontSelect.addEventListener('change', () => {
@@ -2573,7 +2550,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Styles/Headers
   const styleSelect = document.getElementById('style-select');
   if (styleSelect) {
     styleSelect.addEventListener('change', () => {
@@ -2589,7 +2565,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Font Sizing
   const fontSizeInput = document.querySelector('.font-size-input');
   const decreaseBtn = document.getElementById('decrease-size-btn');
   const increaseBtn = document.getElementById('increase-size-btn');
@@ -2632,7 +2607,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Initialize view
   EditorEngine.renderTabsSidebar();
   EditorEngine.loadActiveTabContent();
 });
