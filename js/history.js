@@ -140,7 +140,7 @@ const fullBrainstormContent = `<div style="font-family: Arial, sans-serif; line-
 </div>`;
 
 // ---- Earlier content for the history progression (shorter drafts) ----
-const outlineContent = `<h2>Persuasive Essay Outline</h2><ul><li>Intro</li><li>Body 1</li><li>Conclusion</li></ul>`;
+const outlineContent = `<h2>The Utility of Gods Outline</h2><ul><li>Intro</li><li>Body 1</li><li>Conclusion</li></ul>`;
 const introContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilisations around the world have independantly developed religious traditions, suggesting that these beliefs address something fundamental about human nature.</p>`;
 const bodyContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilisations around the world have independantly developed religious traditions...</p><p>Religion has long served as one of humanity's most influential systems for moral education.</p>`;
 
@@ -158,7 +158,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Format modifier applied",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: fullEssayContent },
+            { id: 'tab1', title: 'The Utility of Gods', content: fullEssayContent },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -171,7 +171,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Grammar and spelling fixes",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: fullEssayContent.replace(/civilizations/g, 'civilisations') },
+            { id: 'tab1', title: 'The Utility of Gods', content: fullEssayContent.replace(/civilizations/g, 'civilisations') },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -184,7 +184,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Expanded body with examples",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: bodyContent + "<p>Studies show religious communities report stronger social support...</p>" },
+            { id: 'tab1', title: 'The Utility of Gods', content: bodyContent + "<p>Studies show religious communities report stronger social support...</p>" },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -197,7 +197,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Drafted final paragraphs",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: bodyContent + "<p>...and thus religion remains vital.</p>" },
+            { id: 'tab1', title: 'The Utility of Gods', content: bodyContent + "<p>...and thus religion remains vital.</p>" },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -210,7 +210,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Drafted body paragraphs",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: bodyContent },
+            { id: 'tab1', title: 'The Utility of Gods', content: bodyContent },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -223,7 +223,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Drafted Introduction",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: introContent },
+            { id: 'tab1', title: 'The Utility of Gods', content: introContent },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -236,7 +236,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Added Brainstorm tab",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: outlineContent },
+            { id: 'tab1', title: 'The Utility of Gods', content: outlineContent },
             { id: 'tab2', title: 'Brainstorm', content: fullBrainstormContent }
         ]
     },
@@ -249,7 +249,7 @@ const documentHistory = [
         authorColor: "#0f9d58",
         description: "Edited: Drafted essay outline",
         tabsState: [
-            { id: 'tab1', title: 'PERSUASIVE ESSAY', content: outlineContent }
+            { id: 'tab1', title: 'The Utility of Gods', content: outlineContent }
         ]
     }
 ];
