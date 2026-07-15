@@ -1,22 +1,21 @@
 /**
- * app.js — App Orchestrator (Configured for Persistent Margin Layout Tracker)
+ * app.js — App Orchestrator (Configured for Persistent Side Margin-track Setup)
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize workspace objects safely and sequentially
   EditorEngine.renderTabsSidebar();
   EditorEngine.loadActiveTabContent();
   CommentsEngine.bindSelectionListener();
   
-  // Safe function reference parsing (Fully CSP-Compliant)
-  setTimeout(CommentsEngine.renderCommentCards, 100);
+  // Initial sync display for loaded components
+  setTimeout(() => { CommentsEngine.renderCommentCards(); }, 100);
 
-  // ----- Tab Management -----
+  // ----- Tab creation -----
   document.getElementById('add-tab-btn')?.addEventListener('click', () => {
     EditorEngine.createNewTab();
-    setTimeout(CommentsEngine.renderCommentCards, 100);
+    CommentsEngine.renderCommentCards();
   });
 
-  // ----- Rich-Text Tooling Actions -----
+  // ----- Toolbar formatting engines -----
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Typography settings selectors
+  // Font adjustments
   document.querySelector('select[title="Font"]')?.addEventListener('change', (e) => {
     document.execCommand('fontName', false, e.target.value);
     HistoryEngine.captureSnapshot(`Font: ${e.target.value}`);
@@ -53,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CommentsEngine.saveCommentsToStorage();
   });
 
-  // Font sizing system
+  // Size sizing systems
   const dec = document.getElementById('decrease-size-btn');
   const inc = document.getElementById('increase-size-btn');
   const sizeIn = document.querySelector('.font-size-input');
@@ -77,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
           HistoryEngine.captureSnapshot(`Size: ${newSize}px`);
         }
         CommentsEngine.saveCommentsToStorage();
-        setTimeout(CommentsEngine.renderCommentCards, 50);
+        CommentsEngine.renderCommentCards();
       }
     };
     dec.addEventListener('click', () => {
@@ -94,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ----- Comments Trigger Binding Links -----
+  // ----- Comment Action triggers -----
   document.getElementById('add-comment-btn')?.addEventListener('click', () => {
     CommentsEngine.promptForCommentOnSelection();
   });
@@ -105,26 +104,25 @@ document.addEventListener('DOMContentLoaded', () => {
     CommentsEngine.promptForCommentOnSelection();
   });
 
-  // Recalculate margins cleanly if window sizes transition
-  window.addEventListener('resize', CommentsEngine.renderCommentCards);
+  // Ensure layouts recalculate if user shifts window scales
+  window.addEventListener('resize', () => {
+    CommentsEngine.renderCommentCards();
+  });
 
-  // Mutation monitors tracking keyboard input
+  // Track document edits to update alignment positions
   document.getElementById('pages-container')?.addEventListener('input', () => {
-    EditorEngine.saveCurrentTabContent();
     CommentsEngine.saveCommentsToStorage();
     CommentsEngine.renderCommentCards();
   });
 
-  // ----- Version History Management -----
+  // ----- Version History Workspace Overlays -----
   const historyBtn = document.getElementById('history-btn');
   const vhOverlay = document.getElementById('version-history-view');
   const vhBack = document.getElementById('vh-back-btn');
   if (historyBtn && vhOverlay) {
     historyBtn.addEventListener('click', () => {
       vhOverlay.hidden = false;
-      if (typeof renderHistorySidebar === 'function') {
-        renderHistorySidebar();
-      }
+      renderHistorySidebar();
       HistoryEngine.previewSnapshot(0);
     });
   }
@@ -132,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vhBack.addEventListener('click', () => { vhOverlay.hidden = true; });
   }
 
-  // Version recovery prompt controllers
+  // Restore dialogs
   const confirmModal = document.getElementById('confirm-modal');
   const restoreBtn = document.getElementById('vh-restore-trigger-btn');
   const cancelBtn = document.getElementById('modal-cancel-btn');
@@ -149,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (idx !== -1) HistoryEngine.rollbackTo(idx);
       confirmModal.hidden = true;
       vhOverlay.hidden = true;
-      localStorage.removeItem('docs_margin_comments'); // Purge stale maps on layout flash resets
+      localStorage.removeItem('docs_margin_comments'); // clear stale anchors
       location.reload();
     });
   }
