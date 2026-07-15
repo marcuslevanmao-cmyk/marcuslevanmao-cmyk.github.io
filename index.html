@@ -6,8 +6,8 @@
   <title>The Utility of Gods - Google Docs</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'><path d='M16 0H3a2 2 0 0 0-2 2v28a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8z' fill='%23267CDE'/><path d='M16 0v6a2 2 0 0 0 2 2h5z' fill='%237BAAF7'/><rect x='6' y='14' width='12' height='2' fill='%23fff'/><rect x='6' y='19' width='12' height='2' fill='%23fff'/><rect x='6' y='24' width='8' height='2' fill='%23fff'/></svg>" />
 
-  <!-- ===== layout.css ===== -->
   <style>
+    /* ===== layout.css ===== */
     :root {
       --header-bg: #ffffff;
       --toolbar-bg: #ffffff;
@@ -178,23 +178,18 @@
     .doc-page {
       width: 8.5in;
       min-height: 11in;
-      padding: 1in;
+      padding: 1in 1in 150px 1in;  /* Extra bottom padding for longer feel */
       margin: 2rem auto;
-      background-color: transparent;
-      background-image: 
-        linear-gradient(to bottom, 
-          white 0, 
-          white 10.5in,
-          #f0f0f0 10.5in,
-          #f0f0f0 11in
-        );
-      background-size: 100% 11in;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       border-radius: 2px;
       line-height: 1.5;
       outline: none;
       word-wrap: break-word;
       overflow-wrap: break-word;
+      white-space: pre-wrap;      /* Preserve spaces, wraps long words */
+      position: relative;
+      box-sizing: border-box;
     }
 
     .editor-container {
@@ -371,10 +366,8 @@
       padding: 0 6px;
       white-space: nowrap;
     }
-  </style>
 
-  <!-- ===== components.css ===== -->
-  <style>
+    /* ===== components.css ===== */
     .header-top {
       display: flex;
       align-items: center;
@@ -484,20 +477,6 @@
       text-align: center; font-size: 13px; margin: 0 2px; border-radius: 3px; outline: none;
     }
 
-    .doc-page {
-      background: #ffffff;
-      width: var(--page-width);
-      min-height: 1056px;
-      padding: 1in;
-      box-shadow: 0 1px 3px rgba(60,64,67,0.15), 0 1px 2px rgba(60,64,67,0.3);
-      margin-top: 16px;
-      outline: none;
-      position: relative;
-      box-sizing: border-box;
-    }
-
-    .page-number { font-size: 11px; color: var(--text-secondary); margin: 8px 0 24px; text-align: center; width: 100%; }
-
     .tab-item-row {
       display: flex;
       align-items: center;
@@ -535,10 +514,8 @@
       border-radius: 50%; width: 20px; height: 20px; cursor: pointer;
     }
     .tab-close-btn:hover { background: rgba(0,0,0,0.1); color: #c2185b; }
-  </style>
 
-  <!-- ===== comments.css ===== -->
-  <style>
+    /* ===== comments.css extended ===== */
     .comment-anchor {
       background: rgba(251, 188, 4, 0.25);
       border-bottom: 2px solid #fbbc04;
@@ -712,9 +689,7 @@
     .comment-floating-actions .btn-primary:hover { background: #1557b0; }
     .comment-floating-actions .btn-secondary:hover { background: rgba(0,0,0,0.04); }
 
-    /* =========================================
-       GOOGLE DOCS SIDEBAR UI & COM COMMENTS
-       ========================================= */
+    /* ===== Google Docs Sidebar & Comments ===== */
     .docs-sidebar {
       width: 320px;
       background-color: #f9fbfd;
@@ -957,6 +932,89 @@
       max-width: 100%;
       box-sizing: border-box;
     }
+
+    /* ===== Hanging Comments in Margin ===== */
+    .margin-comments-track {
+      position: absolute;
+      top: 0;
+      right: -280px; /* hang out in the right margin */
+      width: 240px;
+      height: 100%;
+      pointer-events: none; /* allow clicks through empty space */
+    }
+    .margin-comment-card {
+      position: absolute;
+      pointer-events: auto;
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      padding: 12px;
+      width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      transition: box-shadow 0.15s ease-in-out, border-color 0.15s;
+      font-size: 13px;
+      line-height: 1.4;
+      cursor: default;
+      left: 0;
+    }
+    .margin-comment-card:hover {
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      border-color: #1a73e8;
+    }
+    .margin-comment-card .margin-comment-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .margin-comment-card .margin-comment-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .margin-comment-card .margin-comment-author {
+      font-weight: 500;
+      color: #1f1f1f;
+      font-size: 12px;
+    }
+    .margin-comment-card .margin-comment-text {
+      color: #3c4043;
+      font-size: 12px;
+      word-break: break-word;
+      margin-top: 2px;
+    }
+
+    /* ===== Large Essay Title ===== */
+    .essay-main-title {
+      font-family: 'Georgia', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .title-divider {
+      border: 0;
+      height: 1px;
+      background: #e5e7eb;
+      margin-bottom: 30px;
+    }
+
+    /* Force green for Marcus */
+    .vh-author-dot.marcus-green {
+      background-color: #0f9d58 !important;
+    }
+    .vh-item .vh-author-dot {
+      background-color: #0f9d58; /* default green for all */
+    }
   </style>
 </head>
 <body>
@@ -1107,7 +1165,6 @@
 
     <!-- Google Docs Style Comments Sidebar -->
     <aside class="docs-sidebar" id="docs-sidebar" hidden>
-      <!-- Header -->
       <div class="sidebar-header">
         <h3>Comments</h3>
         <div class="header-icons">
@@ -1119,19 +1176,16 @@
         </div>
       </div>
 
-      <!-- Tabs -->
       <div class="sidebar-tabs">
         <div class="tab active">All comments</div>
         <div class="tab">For you</div>
       </div>
 
-      <!-- Filters -->
       <div class="sidebar-filters">
         <button class="filter-btn">All types <span class="dropdown-arrow">▾</span></button>
         <button class="filter-btn">All tabs <span class="dropdown-arrow">▾</span></button>
       </div>
 
-      <!-- Comments List -->
       <div class="sidebar-content" id="comments-list">
         <div class="empty-state">
           <p>Start a discussion</p>
@@ -1139,7 +1193,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="sidebar-footer">
         <p><strong>Who sees comments?</strong><br>
         Your comments will be seen by anyone who can comment or edit this document. <a href="#">Learn more</a></p>
@@ -1161,7 +1214,6 @@
 <div id="version-history-view" hidden>
   <div style="display:flex; flex-direction:column; height:100vh;">
 
-    <!-- Top bar -->
     <div class="vh-header">
       <button class="vh-back-btn" id="vh-back-btn" title="Back">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1174,14 +1226,12 @@
       <span class="vh-total-edits" id="vh-total-edits" style="margin-left:16px; font-size:13px; color:var(--text-secondary);">Total: 0 edits</span>
     </div>
 
-    <!-- Workspace -->
     <div style="flex:1; display:flex; flex-direction:row; overflow:hidden;">
       <aside style="width:220px; border-right:1px solid var(--border-strong); background:#fff; padding:12px 0; overflow-y:auto; flex-shrink:0;">
         <div style="padding:0 16px 8px; font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); font-weight:600;">Document tabs</div>
         <div id="vh-tabs-container"></div>
       </aside>
 
-      <!-- FIXED: History Canvas Container Scroll (from overflow-y to standard overflow) -->
       <main style="flex:1; overflow:auto; padding:24px; display:flex; flex-direction:column; align-items:center; background:var(--canvas-bg);">
         <div id="vh-canvas" style="width:816px; background:#fff; padding:96px; min-height:1056px; box-shadow:0 1px 3px rgba(60,64,67,0.15); border:1px solid var(--border-subtle);"></div>
       </main>
@@ -1213,7 +1263,7 @@
 
 <!-- ===== SCRIPTS ===== -->
 <script>
-// js/editor.js
+// js/editor.js (with title injection)
 const EditorEngine = (() => {
   const STORAGE_KEY_TABS = 'gdocs_tabs_v1';
   const STORAGE_KEY_ACTIVE_TAB = 'gdocs_active_tab_v1';
@@ -1228,13 +1278,15 @@ const EditorEngine = (() => {
     console.warn("Failed to load tabs from localStorage", e);
   }
 
-  // Fallback default tabs if localStorage is empty
+  // Fallback default tabs with essay title
   if (!documentTabs || documentTabs.length === 0) {
     documentTabs = [
       {
         id: "tab_1",
         title: "The Utility of Gods",
         htmlContent: `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
+  <h1 class="essay-main-title">The Utility of Gods</h1>
+  <hr class="title-divider" />
   <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p>
   <p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables. These simple stories could be understood and remembered by children, farmers, and kings alike. Values like charity, forgiveness, sacrifice, and humility have survived for millennia because religion packaged them within compelling narratives and shared rituals. The sociologist Émile Durkheim argued that religion reinforces social solidarity and collective identity by binding communities through shared practices and beliefs. Similarly, psychologist Jonathan Haidt argues in The Righteous Mind that religious communities foster cooperation and trust by creating "moral communities." Studies support this idea. According to the Pew Research Center, actively religious Americans report having larger social networks and stronger feelings of social support than their non-religious counterparts. Stories and rituals are effective because they connect abstract moral ideas to emotion, memory, and identity. As a result, religion builds communities capable of sustaining moral values across generations. Yet this very success creates a dangerous temptation. People can mistake the tool for its purpose and treat the stories as literal truth rather than as vehicles for human growth. Religion's greatest strength, then, is not in proving the supernatural but in cultivating communities of character.</p>
   <p>Of course, religion has also inspired remarkable scientific, philosophical, and humanitarian contributions throughout history. Many believers already embrace scientific inquiry, charity, and critical reflection. Traditions like Christianity, Judaism, and Islam have produced profound thinkers who engaged in rigorous questioning. The question, however, is not whether religion has done good, but whether it reaches its fullest potential when it encourages continued inquiry. Progress in science, ethics, and civil rights has repeatedly depended on people willing to question accepted ideas, whether religious, political, or cultural, rather than accept them uncritically. Many reformers, from abolitionists to civil rights leaders, drew on their faith while challenging the status quo. Nietzsche observed that modern society had outgrown religion's explanatory role but had yet to replace the moral structure it provided. Many of the natural phenomena once attributed to divine intervention are now explained through scientific inquiry, reducing one of religion's historical roles as an explanation for the natural world. Camus argued that genuine courage lies in continuing to search despite uncertainty rather than escaping into comforting certainty. I believe this willingness to continue searching is religion's greatest unrealized strength. The incredible power of religion to inspire, unite, and teach could be more fully realized by cultivating wiser, more compassionate, and more intellectually honest communities. Humanity does not need fewer cathedrals. It needs cathedrals dedicated to truth rather than certainty, where the greatest virtue is not unquestioning belief but the courage to continue searching. The truest measure of any religion is the kind of people it helps create.</p>
@@ -1370,7 +1422,6 @@ const EditorEngine = (() => {
       input.addEventListener('input', () => {
         tab.title = input.value.trim() || "Untitled Tab";
         saveToLocalStorage();
-        // Sync document title header
         const docTitleInput = document.querySelector('.doc-title');
         if (docTitleInput && tab.id === activeTabId) {
           docTitleInput.value = tab.title;
@@ -1398,7 +1449,7 @@ const EditorEngine = (() => {
 
   function splitContentIntoPages(html, pageHeight) {
     const temp = document.createElement('div');
-    temp.style.cssText = 'position:absolute; visibility:hidden; width:816px; padding:96px; font-family: "Times New Roman", Times, serif; font-size:16px; line-height:1.6;';
+    temp.style.cssText = 'position:absolute; visibility:hidden; width:816px; padding:1in 1in 150px 1in; font-family: "Times New Roman", Times, serif; font-size:16px; line-height:1.6;';
     document.body.appendChild(temp);
     temp.innerHTML = html;
 
@@ -1470,7 +1521,7 @@ const EditorEngine = (() => {
 
       const html = page.innerHTML;
       const temp = document.createElement('div');
-      temp.style.cssText = 'position:absolute; visibility:hidden; width:816px; padding:96px; font-family: "Times New Roman", Times, serif; font-size:16px; line-height:1.6;';
+      temp.style.cssText = 'position:absolute; visibility:hidden; width:816px; padding:1in 1in 150px 1in; font-family: "Times New Roman", Times, serif; font-size:16px; line-height:1.6;';
       document.body.appendChild(temp);
       
       const parts = html.split(/(<p[^>]*>.*?<\/p>)/i);
@@ -1563,7 +1614,7 @@ const EditorEngine = (() => {
 </script>
 
 <script>
-// js/history.js
+// js/history.js (green forced, total edits updated)
 const fullEssayContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
   <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p>
 </div>`;
@@ -1584,7 +1635,7 @@ const documentHistory = [
         displayDate: "May 15, 4:00 p.m.",
         dayGroup: "Friday",
         author: "Marcus Le Van Mao",
-        authorColor: "#0f9d58",
+        authorColor: "#0f9d58", // green
         description: "Edited: Format modifier applied",
         tabsState: [
             { id: 'tab_1', title: 'The Utility of Gods', content: fullEssayContent },
@@ -1666,7 +1717,7 @@ const HistoryEngine = (() => {
             displayDate: displayDate,
             dayGroup: dayGroup,
             author: "Marcus Le Van Mao",
-            authorColor: "#4285f4",
+            authorColor: "#0f9d58", // force green for all snapshots
             description: description || "Edited",
             tabsState: _getCurrentTabsState()
         };
@@ -1678,6 +1729,9 @@ const HistoryEngine = (() => {
         if (_history.length > 50) _history.pop();
         saveHistoryToStorage(_history);
         renderHistorySidebar();
+        // Update total edits count
+        const totalSpan = document.getElementById('vh-total-edits');
+        if (totalSpan) totalSpan.textContent = `Total: ${_history.length} edits`;
         return snapshot;
     }
 
@@ -1742,14 +1796,16 @@ function renderHistorySidebar() {
         const item = document.createElement('div');
         item.className = `vh-item ${isActive ? 'active' : ''}`;
         item.dataset.id = version.id;
+        // Force green dot for Marcus
+        const dotColor = version.author === "Marcus Le Van Mao" ? "#0f9d58" : (version.authorColor || "#0f9d58");
         item.innerHTML = `
             <div class="vh-item-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
             <div class="vh-item-content">
                 <div class="vh-item-time">${version.displayDate}</div>
                 <div class="vh-item-subtitle">${version.description}</div>
                 <div class="vh-item-author-row">
-                    <div class="vh-author-dot" style="background-color: ${version.authorColor};"></div>
-                    <span style="color: ${version.authorColor}; font-weight: 500;">${version.author}</span>
+                    <div class="vh-author-dot" style="background-color: ${dotColor};"></div>
+                    <span style="color: ${dotColor}; font-weight: 500;">${version.author}</span>
                 </div>
             </div>
         `;
@@ -1760,6 +1816,10 @@ function renderHistorySidebar() {
         });
         listContainer.appendChild(item);
     });
+
+    // Update total edits count
+    const totalSpan = document.getElementById('vh-total-edits');
+    if (totalSpan) totalSpan.textContent = `Total: ${currentHistory.length} edits`;
 }
 
 function previewVersion(versionId) {
@@ -1817,6 +1877,7 @@ function previewVersion(versionId) {
         canvas.innerHTML = html;
     }
 
+    // Update total edits count
     const totalSpan = document.getElementById('vh-total-edits');
     if (totalSpan) totalSpan.textContent = `Total: ${currentHistory.length} edits`;
 }
@@ -1839,16 +1900,12 @@ window.restoreFullDocumentState = function (savedTabsState) {
 function initHistory() {
     renderHistorySidebar();
     
-    // FIXED: Fall back to localstorage if it exists to avoid overwriting typed content
-    const storedTabs = localStorage.getItem('gdocs_tabs_v1');
-    if (storedTabs) {
-        EditorEngine.loadActiveTabContent();
-    } else if (currentHistory.length > 0) {
+    // Auto-select latest version when history opens
+    if (currentHistory.length > 0) {
         previewVersion(currentHistory[0].id);
-        const latest = currentHistory[0];
-        if (latest && latest.tabsState) {
-            window.restoreFullDocumentState(latest.tabsState);
-        }
+        // Highlight first item in sidebar
+        const firstItem = document.querySelector('.vh-item');
+        if (firstItem) firstItem.classList.add('active');
     }
 }
 
@@ -1860,7 +1917,7 @@ if (document.readyState === 'loading') {
 </script>
 
 <script>
-// js/comments.js — FIXED: Fully operational Google Docs style Margin system with LocalStorage
+// js/comments.js — Dual system: margin cards + sidebar list
 const CommentsEngine = (() => {
   const comments = new Map();
   let pendingRange = null;
@@ -1869,7 +1926,6 @@ const CommentsEngine = (() => {
 
   const STORAGE_KEY_COMMENTS = 'gdocs_comments_v1';
 
-  // Boot up comment cache
   loadCommentsFromStorage();
 
   if (document.readyState === 'loading') {
@@ -1985,7 +2041,7 @@ const CommentsEngine = (() => {
     if (page) {
       const pageRect = page.getBoundingClientRect();
       const top = lastRect.top + window.scrollY;
-      const left = pageRect.right + window.scrollX - 45; // Float nicely in margins
+      const left = pageRect.right + window.scrollX - 45; // Float in margin
 
       btn.style.position = 'absolute';
       btn.style.left = left + 'px';
@@ -2167,15 +2223,77 @@ const CommentsEngine = (() => {
     pendingCommentId = null;
   }
 
-  // FIXED: Renders newly formatted comments inside sidebar matching Doc standards
+  // ===== Dual rendering: margin cards + sidebar list =====
   function renderCommentCards() {
+    renderMarginCards();
+    renderSidebarList();
+  }
+
+  function renderMarginCards() {
+    const container = document.getElementById('pages-container');
+    if (!container) return;
+
+    // Remove old track
+    let track = document.getElementById('margin-comments-track');
+    if (track) track.remove();
+
+    // Create new track
+    track = document.createElement('div');
+    track.id = 'margin-comments-track';
+    track.className = 'margin-comments-track';
+    container.appendChild(track);
+
+    const activeTabId = EditorEngine.getActiveTabId();
+
+    comments.forEach((c) => {
+      if (c.resolved || c.tabId !== activeTabId) return;
+
+      const anchor = document.querySelector(`.comment-anchor[data-comment-id="${c.id}"]`);
+      if (!anchor) return;
+
+      const page = anchor.closest('.doc-page');
+      if (!page) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+
+      // Position relative to container
+      const top = (anchorRect.top - containerRect.top) + container.scrollTop;
+
+      const card = document.createElement('div');
+      card.className = 'margin-comment-card';
+      card.style.top = top + 'px';
+      card.innerHTML = `
+        <div class="margin-comment-header">
+          <div class="margin-comment-avatar" style="background:${c.author === 'You' ? '#1a73e8' : '#0f9d58'}">${c.avatar || 'Y'}</div>
+          <span class="margin-comment-author">${c.author}</span>
+        </div>
+        <div class="margin-comment-text">${c.text}</div>
+      `;
+      card.addEventListener('click', () => {
+        // Scroll to anchor and highlight
+        anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.querySelectorAll('.comment-anchor').forEach(a => a.classList.remove('active'));
+        anchor.classList.add('active');
+        // Highlight sidebar card
+        document.querySelectorAll('.docs-comment-card').forEach(card => card.classList.remove('active-comment'));
+        const sidebarCard = document.querySelector(`.docs-comment-card[data-comment-id="${c.id}"]`);
+        if (sidebarCard) sidebarCard.classList.add('active-comment');
+        // Open sidebar if closed
+        const sidebar = document.getElementById('docs-sidebar');
+        if (sidebar) sidebar.hidden = false;
+      });
+      track.appendChild(card);
+    });
+  }
+
+  function renderSidebarList() {
     const container = document.getElementById('comments-list');
     if (!container) return;
 
     container.innerHTML = '';
     const currentTabId = EditorEngine.getActiveTabId();
 
-    // Show active comments matching the current active tab
     const activeComments = Array.from(comments.values()).filter(c => c.tabId === currentTabId && !c.resolved);
 
     if (activeComments.length === 0) {
@@ -2239,7 +2357,14 @@ const CommentsEngine = (() => {
           
           document.querySelectorAll('.docs-comment-card').forEach(c => c.classList.remove('active-comment'));
           card.classList.add('active-comment');
+          
+          // Also highlight margin card
+          const marginCard = document.querySelector(`.margin-comment-card[data-comment-id="${comment.id}"]`);
+          if (marginCard) marginCard.style.borderColor = '#1a73e8';
         }
+        // Open sidebar if hidden
+        const sidebar = document.getElementById('docs-sidebar');
+        if (sidebar) sidebar.hidden = false;
       });
 
       card.querySelector('.resolve-btn').addEventListener('click', () => {
@@ -2288,7 +2413,7 @@ const CommentsEngine = (() => {
   };
 })();
 
-// Link Document Highlight clicks directly to focus Comments Sidebar
+// Click on comment anchor to open sidebar and highlight
 document.addEventListener('DOMContentLoaded', () => {
   const pagesContainer = document.getElementById('pages-container');
   if (pagesContainer) {
@@ -2317,7 +2442,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-// js/ui-wiring.js — FIXED: Interactive Formatting, Menu Buttons & Overlay Bindings
+// js/ui-wiring.js — Interactive Formatting, Menu Buttons & Overlay Bindings
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Setup Navigation Actions
   const commentBtn = document.getElementById('comment-btn');
@@ -2348,6 +2473,13 @@ document.addEventListener('DOMContentLoaded', () => {
       EditorEngine.saveCurrentTabContent();
       EditorEngine.saveToLocalStorage();
       renderHistorySidebar();
+      // Auto-select latest version
+      if (currentHistory.length > 0) {
+        HistoryEngine.previewSnapshot(0);
+        // Highlight first item
+        const firstItem = document.querySelector('.vh-item');
+        if (firstItem) firstItem.classList.add('active');
+      }
       vhView.hidden = false;
     });
   }
@@ -2505,5 +2637,6 @@ document.addEventListener('DOMContentLoaded', () => {
   EditorEngine.loadActiveTabContent();
 });
 </script>
+
 </body>
 </html>
