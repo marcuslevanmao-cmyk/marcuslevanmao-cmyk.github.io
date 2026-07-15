@@ -187,125 +187,76 @@ const CommentsEngine = (() => {
   // ------------------------------
   // 3. Hanging Margin Cards Render
   // ------------------------------
-  function renderCommentCards() {
-    const activeTabId = EditorEngine.getActiveTabId();
+function renderCommentCards() {
+  const activeTabId = EditorEngine.getActiveTabId();
+  const sidebarList = document.getElementById('comments-list');
+  if (!sidebarList) return;
+  sidebarList.innerHTML = '';
 
-    // Remove existing container if present
-    let floatingContainer = document.getElementById('margin-comments-container');
-    if (floatingContainer) {
-      floatingContainer.remove();
+  // Collect non‑resolved comments for this tab that still have an anchor
+  const activeComments = [];
+  comments.forEach((c, key) => {
+    if (!c.resolved && c.tabId === activeTabId) {
+      const anchorExists = document.querySelector(`span[data-comment-id="${c.id}"]`);
+      if (anchorExists) {
+        activeComments.push([key, c]);
+      }
     }
+  });
 
-    floatingContainer = document.createElement('div');
-    floatingContainer.id = 'margin-comments-container';
-    floatingContainer.style.position = 'absolute';
-    floatingContainer.style.right = '-310px';
-    floatingContainer.style.top = '0';
-    floatingContainer.style.width = '280px';
-    floatingContainer.style.pointerEvents = 'auto';
-    document.getElementById('doc-canvas').appendChild(floatingContainer);
-
-    const sidebarList = document.getElementById('comments-list');
-    if (sidebarList) sidebarList.innerHTML = '';
-
-    const activeComments = [];
-    comments.forEach((c, key) => {
-      if (!c.resolved && c.tabId === activeTabId) {
-        const anchorExists = document.querySelector(`span[data-comment-id="${c.id}"]`);
-        if (anchorExists) {
-          activeComments.push([key, c]);
-        }
-      }
-    });
-
-    if (activeComments.length === 0) {
-      if (sidebarList) {
-        sidebarList.innerHTML = `
-          <div style="padding: 24px; text-align: center; color: var(--text-secondary); font-size: 14px;">
-            No comments on this tab
-          </div>
-        `;
-      }
-      return;
-    }
-
-    activeComments.forEach(([key, c]) => {
-      // Margin card
-      const card = document.createElement('div');
-      card.className = 'comment-card';
-      card.style.position = 'absolute';
-      card.style.top = `${c.topOffset}px`;
-      card.style.width = '260px';
-      card.style.background = '#fff';
-      card.style.borderRadius = '8px';
-      card.style.padding = '12px';
-      card.style.border = '1px solid #dadce0';
-      card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-      card.style.zIndex = '10';
-
-      card.innerHTML = `
-        <div class="comment-card-header">
-          <div class="comment-avatar">U</div>
-          <span class="comment-author">You</span>
-        </div>
-        <p class="comment-quote">“${c.quote}”</p>
-        <p class="comment-body">${c.body}</p>
-        <div class="comment-actions">
-          <button data-act="resolve">Resolve</button>
-          <button data-act="delete" class="delete-btn">Delete</button>
-        </div>
-      `;
-
-      card.addEventListener('mouseenter', () => {
-        document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => el.classList.add('active'));
-      });
-      card.addEventListener('mouseleave', () => {
-        document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => el.classList.remove('active'));
-      });
-
-      card.querySelector('[data-act="resolve"]').addEventListener('click', () => {
-        c.resolved = true;
-        renderCommentCards();
-      });
-
-      card.querySelector('[data-act="delete"]').addEventListener('click', () => {
-        comments.delete(key);
-        removeAnchor(c.id);
-        renderCommentCards();
-      });
-
-      floatingContainer.appendChild(card);
-
-      // Sidebar list item
-      if (sidebarList) {
-        const listItem = document.createElement('div');
-        listItem.className = 'comment-card';
-        listItem.style.marginBottom = '10px';
-        listItem.innerHTML = `
-          <div class="comment-card-header">
-            <div class="comment-avatar">U</div>
-            <span class="comment-author">You</span>
-          </div>
-          <p class="comment-quote">“${c.quote}”</p>
-          <p class="comment-body">${c.body}</p>
-          <div class="comment-actions">
-            <button data-act="resolve-sidebar">Resolve</button>
-            <button data-act="delete-sidebar" class="delete-btn">Delete</button>
-          </div>
-        `;
-        listItem.querySelector('[data-act="resolve-sidebar"]').addEventListener('click', () => {
-          c.resolved = true;
-          renderCommentCards();
-        });
-        listItem.querySelector('[data-act="delete-sidebar"]').addEventListener('click', () => {
-          comments.delete(key);
-          removeAnchor(c.id);
-          renderCommentCards();
-        });
-        sidebarList.appendChild(listItem);
-      }
-    });
+  if (activeComments.length === 0) {
+    sidebarList.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: var(--text-secondary); font-size: 14px;">
+        No comments on this tab
+      </div>
+    `;
+    return;
   }
+
+  // Render each comment as a simple card
+  activeComments.forEach(([key, c]) => {
+    const card = document.createElement('div');
+    card.className = 'comment-card';
+    card.innerHTML = `
+      <div class="comment-header">
+        <span class="comment-author">You</span>
+        <span class="comment-date">${new Date().toLocaleDateString()}</span>
+      </div>
+      <div class="comment-body">
+        <p style="font-style:italic; color:#5f6368; margin:0 0 6px 0;">“${c.quote}”</p>
+        <p style="margin:0 0 8px 0;">${c.body}</p>
+        <div style="display:flex; gap:8px;">
+          <button data-act="resolve" style="background:none;border:none;color:#1a73e8;cursor:pointer;font-size:12px;">Resolve</button>
+          <button data-act="delete" style="background:none;border:none;color:#ea4335;cursor:pointer;font-size:12px;">Delete</button>
+        </div>
+      </div>
+    `;
+
+    card.querySelector('[data-act="resolve"]').addEventListener('click', () => {
+      c.resolved = true;
+      // remove anchor highlight (optional)
+      document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => {
+        el.className = 'comment-anchor resolved';
+      });
+      renderCommentCards(); // re‑render
+    });
+
+    card.querySelector('[data-act="delete"]').addEventListener('click', () => {
+      // remove anchor and delete comment
+      document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => {
+        el.replaceWith(...el.childNodes);
+      });
+      comments.delete(key);
+      renderCommentCards();
+    });
+
+    sidebarList.appendChild(card);
+  });
+
+  // Remove the floating margin container (we're only using the sidebar now)
+  const marginContainer = document.getElementById('margin-comments-container');
+  if (marginContainer) marginContainer.remove();
+}
 
   // ------------------------------
   // 4. Public API
