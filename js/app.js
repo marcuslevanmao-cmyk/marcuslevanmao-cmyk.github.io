@@ -1,13 +1,15 @@
 /**
- * app.js — App Orchestrator (updated for new comment sidebar)
+ * app.js — App Orchestrator (updated for floating comment button)
  */
 document.addEventListener('DOMContentLoaded', () => {
   EditorEngine.renderTabsSidebar();
   EditorEngine.loadActiveTabContent();
   CommentsEngine.bindSelectionListener();
 
+  // ----- Tab creation -----
   document.getElementById('add-tab-btn')?.addEventListener('click', () => EditorEngine.createNewTab());
 
+  // ----- Toolbar actions -----
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
@@ -29,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Font and style selectors
   document.querySelector('select[title="Font"]')?.addEventListener('change', (e) => {
     document.execCommand('fontName', false, e.target.value);
     HistoryEngine.captureSnapshot(`Font: ${e.target.value}`);
@@ -39,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     HistoryEngine.captureSnapshot(`Style: ${e.target.value}`);
   });
 
+  // Font size buttons
   const dec = document.getElementById('decrease-size-btn');
   const inc = document.getElementById('increase-size-btn');
   const sizeIn = document.querySelector('.font-size-input');
@@ -77,12 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ─── UPDATED: comment button now uses #add-comment-btn ───
+  // ----- Comment button in toolbar (opens composer for selection) -----
   document.getElementById('add-comment-btn')?.addEventListener('click', () => CommentsEngine.promptForCommentOnSelection());
 
-  // ─── UPDATED: toggle uses #docs-sidebar ───
+  // ----- Floating comment button click -----
+  document.getElementById('floating-comment-btn')?.addEventListener('click', () => {
+    CommentsEngine.promptForCommentOnSelection();
+  });
+
+  // ----- Toggle comments sidebar -----
   const commentBtn = document.getElementById('comment-btn');
-  const commentsSidebar = document.getElementById('docs-sidebar');       // changed from 'comments-sidebar'
+  const commentsSidebar = document.getElementById('docs-sidebar');
   const closeComments = document.getElementById('close-comments-btn');
   if (commentBtn && commentsSidebar) {
     commentBtn.addEventListener('click', () => {
@@ -95,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeComments.addEventListener('click', () => { commentsSidebar.hidden = true; });
   }
 
+  // ----- Version history -----
   const historyBtn = document.getElementById('history-btn');
   const vhOverlay = document.getElementById('version-history-view');
   const vhBack = document.getElementById('vh-back-btn');
@@ -110,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vhBack.addEventListener('click', () => { vhOverlay.hidden = true; });
   }
 
+  // ----- Restore modal -----
   const confirmModal = document.getElementById('confirm-modal');
   const restoreBtn = document.getElementById('vh-restore-trigger-btn');
   const cancelBtn = document.getElementById('modal-cancel-btn');
@@ -129,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ─── UPDATED: click‑outside uses #docs-sidebar ───
+  // ----- Click outside sidebar to close -----
   document.addEventListener('click', (e) => {
     if (commentsSidebar && !commentsSidebar.hidden) {
       const isCommentBtn = e.target.closest('#comment-btn');
