@@ -508,7 +508,12 @@
             font-weight: 500;
             cursor: pointer;
         }
-        .comments-content .primary-add-btn:hover {
+        .comments-content .primary-add-btn:disabled {
+            opacity: 0.45;
+            cursor: default;
+            pointer-events: none;
+        }
+        .comments-content .primary-add-btn:hover:not(:disabled) {
             background-color: #0842a0;
         }
 
@@ -3169,8 +3174,29 @@
               `;
 
                     const emptyAddBtn = container.querySelector('#sidebar-add-comment-btn');
+                    // --- IMPROVED: Google Docs style behavior ---
                     if (emptyAddBtn) {
+                        // Disable button initially if no selection
+                        const updateBtnState = () => {
+                            const sel = window.getSelection();
+                            const hasSelection = sel && sel.toString().trim().length > 0;
+                            emptyAddBtn.disabled = !hasSelection;
+                        };
+                        updateBtnState();
+
+                        // Listen to selection changes
+                        document.addEventListener('selectionchange', updateBtnState);
+
                         emptyAddBtn.addEventListener('click', () => {
+                            const sel = window.getSelection();
+                            if (!sel || sel.toString().trim() === "") {
+                                return; // No text selected, do nothing.
+                            }
+                            // Trigger the toolbar comment button
+                            const toolbarBtn = document.getElementById('add-comment-btn');
+                            if (toolbarBtn) {
+                                toolbarBtn.click();
+                            }
                         });
                     }
                     return;
