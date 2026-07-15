@@ -209,7 +209,7 @@
       left: 100%; 
       width: 320px;
       height: 100%;
-      pointer-events: none; /* Allows scrolling underneath when empty */
+      pointer-events: none;
       z-index: 100;
     }
     
@@ -222,7 +222,7 @@
       padding: 12px;
       margin-left: 20px;
       box-shadow: 0 1px 3px rgba(60,64,67,0.2);
-      pointer-events: auto; /* Re-enables clicking on the actual card */
+      pointer-events: auto;
       cursor: pointer;
       transition: box-shadow 0.15s, border-color 0.15s;
     }
@@ -1042,7 +1042,6 @@
       background-color: #0f9d58;
     }
 
-    /* Ensure history pages don't overflow */
     .history-page * {
       max-width: 100%;
       box-sizing: border-box;
@@ -1296,18 +1295,27 @@
 
 <!-- ===== SCRIPTS ===== -->
 <script>
-// js/editor.js (full content restored)
+// Clear localStorage on load to ensure fresh content
+localStorage.removeItem('gdocs_tabs_v1');
+localStorage.removeItem('gdocs_active_tab_v1');
+localStorage.removeItem('doc_history_v5');
+localStorage.removeItem('docs_margin_comments');
+</script>
+
+<script>
+// js/editor.js — FULL CONTENT RESTORED
 const EditorEngine = (() => {
   const STORAGE_KEY_TABS = 'gdocs_tabs_v1';
   const STORAGE_KEY_ACTIVE_TAB = 'gdocs_active_tab_v1';
 
-  // ---- FULL ESSAY CONTENT ----
+  // ---- FULL ESSAY CONTENT (3 paragraphs) ----
   const fullEssayContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
   <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p>
   <p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables. These simple stories could be understood and remembered by children, farmers, and kings alike. Values like charity, forgiveness, sacrifice, and humility have survived for millennia because religion packaged them within compelling narratives and shared rituals. The sociologist Émile Durkheim argued that religion reinforces social solidarity and collective identity by binding communities through shared practices and beliefs. Similarly, psychologist Jonathan Haidt argues in The Righteous Mind that religious communities foster cooperation and trust by creating "moral communities." Studies support this idea. According to the Pew Research Center, actively religious Americans report having larger social networks and stronger feelings of social support than their non-religious counterparts. Stories and rituals are effective because they connect abstract moral ideas to emotion, memory, and identity. As a result, religion builds communities capable of sustaining moral values across generations. Yet this very success creates a dangerous temptation. People can mistake the tool for its purpose and treat the stories as literal truth rather than as vehicles for human growth. Religion's greatest strength, then, is not in proving the supernatural but in cultivating communities of character.</p>
   <p>Of course, religion has also inspired remarkable scientific, philosophical, and humanitarian contributions throughout history. Many believers already embrace scientific inquiry, charity, and critical reflection. Traditions like Christianity, Judaism, and Islam have produced profound thinkers who engaged in rigorous questioning. The question, however, is not whether religion has done good, but whether it reaches its fullest potential when it encourages continued inquiry. Progress in science, ethics, and civil rights has repeatedly depended on people willing to question accepted ideas, whether religious, political, or cultural, rather than accept them uncritically. Many reformers, from abolitionists to civil rights leaders, drew on their faith while challenging the status quo. Nietzsche observed that modern society had outgrown religion's explanatory role but had yet to replace the moral structure it provided. Many of the natural phenomena once attributed to divine intervention are now explained through scientific inquiry, reducing one of religion's historical roles as an explanation for the natural world. Camus argued that genuine courage lies in continuing to search despite uncertainty rather than escaping into comforting certainty. I believe this willingness to continue searching is religion's greatest unrealized strength. The incredible power of religion to inspire, unite, and teach could be more fully realized by cultivating wiser, more compassionate, and more intellectually honest communities. Humanity does not need fewer cathedrals. It needs cathedrals dedicated to truth rather than certainty, where the greatest virtue is not unquestioning belief but the courage to continue searching. The truest measure of any religion is the kind of people it helps create.</p>
 </div>`;
 
+  // ---- FULL BRAINSTORM CONTENT (all sections) ----
   const fullBrainstormContent = `<div style="font-family: Arial, sans-serif; line-height: 1.5; font-size: 14px; color: #202124;">
   <h3 style="margin-top: 0;">The Wasted Potential of Religion</h3>
   <p><strong>Brainstorm Document</strong></p>
@@ -1577,7 +1585,6 @@ const EditorEngine = (() => {
           docTitleInput.value = tab.title;
         }
         
-        // Live title sync on the document page itself
         if (tab.id === activeTabId) {
           const domTitle = document.querySelector('.doc-page .essay-main-title');
           if (domTitle) {
@@ -1652,7 +1659,6 @@ const EditorEngine = (() => {
       
       let finalContent = content;
       
-      // Inject Main Essay title into Workspace pages (just like history)
       if (index === 0 && !finalContent.includes('essay-main-title')) {
         const currentTab = documentTabs.find(t => t.id === activeTabId);
         const titleText = currentTab ? currentTab.title : 'Untitled';
@@ -1768,7 +1774,6 @@ const EditorEngine = (() => {
     }
   }
 
-  // Expose splitter for history
   function splitHistoryContent(html) {
     const pageHeight = 1056;
     return splitContentIntoPages(html, pageHeight);
@@ -1790,7 +1795,7 @@ const EditorEngine = (() => {
 </script>
 
 <script>
-// js/history.js — full 8-edit history restored
+// js/history.js — FULL 8-EDIT HISTORY WITH COMPLETE CONTENT
 const fullEssayContent = `<div style="font-family: 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6;">
   <p>Across history, civilizations around the world have independently developed religious traditions, suggesting that these beliefs address something fundamental about human nature, our need for belonging, our search for meaning, and our desire for ethical guidance. Religion has been one of humanity's most effective systems for organizing communities and transmitting values, not because of the certainty of its supernatural claims, but because of its unparalleled ability to unite people and inspire moral action. However, religion's greatest strength, its ability to create cohesive communities, can become its greatest weakness when it discourages curiosity, critical thought, and the continual betterment of human life. The measure of a religion should not be the certainty of its supernatural claims but the quality of the human beings it helps create.</p>
   <p>Religion has long served as one of humanity's most influential systems for moral education. Christianity, for example, spread complex ethical teachings through parables. These simple stories could be understood and remembered by children, farmers, and kings alike. Values like charity, forgiveness, sacrifice, and humility have survived for millennia because religion packaged them within compelling narratives and shared rituals. The sociologist Émile Durkheim argued that religion reinforces social solidarity and collective identity by binding communities through shared practices and beliefs. Similarly, psychologist Jonathan Haidt argues in The Righteous Mind that religious communities foster cooperation and trust by creating "moral communities." Studies support this idea. According to the Pew Research Center, actively religious Americans report having larger social networks and stronger feelings of social support than their non-religious counterparts. Stories and rituals are effective because they connect abstract moral ideas to emotion, memory, and identity. As a result, religion builds communities capable of sustaining moral values across generations. Yet this very success creates a dangerous temptation. People can mistake the tool for its purpose and treat the stories as literal truth rather than as vehicles for human growth. Religion's greatest strength, then, is not in proving the supernatural but in cultivating communities of character.</p>
@@ -1924,7 +1929,7 @@ const fullBrainstormContent = `<div style="font-family: Arial, sans-serif; line-
   </ol>
 </div>`;
 
-const outlineContent = `<h2>The Utility of Gods Outline</h2><ul><li>Intro</li><li>Body 1</li><li>Conclusion</li></ul>`;
+const outlineContent = `<h2>Persuasive Essay Outline</h2><ul><li>Intro</li><li>Body 1</li><li>Conclusion</li></ul>`;
 const introContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilisations around the world have independantly developed religious traditions, suggesting that these beliefs address something fundamental about human nature.</p>`;
 const bodyContent = `<h2>The Wasted Potential of Religion</h2><p>Across history, civilisations around the world have independantly developed religious traditions...</p><p>Religion has long served as one of humanity's most influential systems for moral education.</p>`;
 
@@ -2241,7 +2246,6 @@ function previewVersion(versionId) {
     const activeTab = version.tabsState.find(t => t.id === currentlyPreviewingTabId) || version.tabsState[0];
     const canvas = document.getElementById('vh-canvas');
     if (canvas) {
-        // Paginate the content
         let htmlContent = activeTab.content || '';
         if (version.author === 'You') {
             htmlContent = `<div class="vh-edit-you">
@@ -2255,7 +2259,6 @@ function previewVersion(versionId) {
         pages.forEach((pageHtml, idx) => {
             const pageDiv = document.createElement('div');
             pageDiv.className = 'history-page';
-            // Inject Title if missing on first page preview
             if (idx === 0 && !pageHtml.includes('essay-main-title')) {
                 pageDiv.innerHTML = `
                     <h1 class="essay-main-title">${activeTab.title || 'Untitled'}</h1>
@@ -2317,7 +2320,7 @@ const CommentsEngine = (() => {
   let activePopup = null;
   let pendingCommentId = null;
 
-  const STORAGE_KEY_COMMENTS = 'gdocs_comments_v1';
+  const STORAGE_KEY_COMMENTS = 'docs_margin_comments';
 
   loadCommentsFromStorage();
 
@@ -2910,7 +2913,6 @@ document.addEventListener('DOMContentLoaded', () => {
         EditorEngine.renderTabsSidebar();
         EditorEngine.saveToLocalStorage();
         
-        // Sync document text title 
         const domTitle = document.querySelector('.doc-page .essay-main-title');
         if (domTitle) {
           domTitle.textContent = activeTab.title;
