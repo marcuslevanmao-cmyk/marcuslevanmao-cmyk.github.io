@@ -70,80 +70,99 @@ const CommentsEngine = (() => {
   // ------------------------------
   // 2. Floating Composer
   // ------------------------------
-  function showFloatingComposer(cid, quote, rangeRect) {
-    if (activePopup) {
-      activePopup.remove();
-      activePopup = null;
-    }
-
-    const popup = document.createElement('div');
-    popup.className = 'comment-floating-composer';
-    // Position near the selection, but keep it in view
-    let left = rangeRect.left + window.scrollX;
-    let top = rangeRect.bottom + window.scrollY + 10;
-    // Ensure it doesn't go off-screen
-    if (left + 340 > window.innerWidth) left = window.innerWidth - 350;
-    if (top + 200 > window.innerHeight) top = rangeRect.top + window.scrollY - 200;
-
-    popup.style.position = 'fixed';
-    popup.style.left = left + 'px';
-    popup.style.top = top + 'px';
-    popup.style.width = '340px';
-    popup.style.zIndex = '1000';
-    popup.innerHTML = `
-      <div class="comment-floating-header">
-        <span>Add comment</span>
-        <button class="close-popup-btn" title="Close">×</button>
-      </div>
-      <div class="comment-floating-quote">“${quote}”</div>
-      <textarea placeholder="Write your comment…"></textarea>
-      <div class="comment-floating-actions">
-        <button class="btn-secondary cancel-btn">Cancel</button>
-        <button class="btn-primary save-btn">Comment</button>
-      </div>
-    `;
-
-    document.body.appendChild(popup);
-    activePopup = popup;
-
-    const textarea = popup.querySelector('textarea');
-    textarea.focus();
-
-    const cleanUp = () => {
-      removeAnchor(cid);
-      closePopup();
-      pendingRange = null;
-      reflectAddCommentButtonState();
-    };
-
-    popup.querySelector('.cancel-btn').addEventListener('click', cleanUp);
-    popup.querySelector('.close-popup-btn').addEventListener('click', cleanUp);
-
-    popup.querySelector('.save-btn').addEventListener('click', () => {
-      const body = textarea.value.trim();
-      if (!body) return;
-
-      const activeTabId = EditorEngine.getActiveTabId();
-      const canvasEl = document.getElementById('doc-canvas');
-      const canvasRect = canvasEl.getBoundingClientRect();
-      // Use the range's bounding rect relative to the canvas (with scroll)
-      const relativeTop = rangeRect.top - canvasRect.top + window.scrollY;
-
-      comments.set(cid, {
-        id: cid,
-        tabId: activeTabId,
-        quote,
-        body,
-        resolved: false,
-        topOffset: relativeTop
-      });
-
-      renderCommentCards();
-      closePopup();
-      pendingRange = null;
-      reflectAddCommentButtonState();
-    });
+function showFloatingComposer(cid, quote, rangeRect) {
+  if (activePopup) {
+    activePopup.remove();
+    activePopup = null;
   }
+
+  const popup = document.createElement('div');
+  popup.className = 'comment-floating-composer';
+  
+  let left = rangeRect.left + window.scrollX;
+  let top = rangeRect.bottom + window.scrollY + 10;
+  if (left + 340 > window.innerWidth) left = window.innerWidth - 350;
+  if (top + 200 > window.innerHeight) top = rangeRect.top + window.scrollY - 200;
+
+  popup.style.position = 'fixed';
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  popup.style.width = '340px';
+  popup.style.zIndex = '1000';
+
+  // ─── NEW GOOGLE DOCS STYLE HOVER CARD ───
+  popup.innerHTML = `
+    <div class="docs-hover-card">
+      <div class="card-header">
+        <div class="avatar">M</div>
+        <span class="user-name">Marcus Le Van Mao élève</span>
+      </div>
+      
+      <div class="card-input-container">
+        <input type="text" class="docs-pill-input" placeholder="Comment or add others with @">
+      </div>
+      
+      <div class="card-actions">
+        <button class="btn-text-cancel">Cancel</button>
+        <button class="btn-filled-comment" disabled>Comment</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+  activePopup = popup;
+
+  const textarea = popup.querySelector('.docs-pill-input');
+  const commentBtn = popup.querySelector('.btn-filled-comment');
+  const cancelBtn = popup.querySelector('.btn-text-cancel');
+  
+  textarea.focus();
+
+  // Enable comment button when text is typed
+  textarea.addEventListener('input', () => {
+    if (textarea.value.trim()) {
+      commentBtn.disabled = false;
+      commentBtn.classList.add('active');
+    } else {
+      commentBtn.disabled = true;
+      commentBtn.classList.remove('active');
+    }
+  });
+
+  const cleanUp = () => {
+    removeAnchor(cid);
+    closePopup();
+    pendingRange = null;
+    reflectAddCommentButtonState();
+  };
+
+  cancelBtn.addEventListener('click', cleanUp);
+  popup.querySelector('.close-popup-btn')?.addEventListener('click', cleanUp);
+
+  commentBtn.addEventListener('click', () => {
+    const body = textarea.value.trim();
+    if (!body) return;
+
+    const activeTabId = EditorEngine.getActiveTabId();
+    const canvasEl = document.getElementById('doc-canvas');
+    const canvasRect = canvasEl.getBoundingClientRect();
+    const relativeTop = rangeRect.top - canvasRect.top + window.scrollY;
+
+    comments.set(cid, {
+      id: cid,
+      tabId: activeTabId,
+      quote,
+      body,
+      resolved: false,
+      topOffset: relativeTop
+    });
+
+    renderCommentCards();
+    closePopup();
+    pendingRange = null;
+    reflectAddCommentButtonState();
+  });
+}
 
   function closePopup() {
     if (activePopup) {
@@ -193,7 +212,6 @@ function renderCommentCards() {
   if (!sidebarList) return;
   sidebarList.innerHTML = '';
 
-  // Collect non‑resolved comments for this tab that still have an anchor
   const activeComments = [];
   comments.forEach((c, key) => {
     if (!c.resolved && c.tabId === activeTabId) {
@@ -206,43 +224,51 @@ function renderCommentCards() {
 
   if (activeComments.length === 0) {
     sidebarList.innerHTML = `
-      <div style="padding: 24px; text-align: center; color: var(--text-secondary); font-size: 14px;">
-        No comments on this tab
+      <div class="empty-state">
+        <p>Start a discussion</p>
+        <button class="primary-add-btn" id="sidebar-add-comment-btn">Add comment</button>
       </div>
     `;
+    const addBtn = sidebarList.querySelector('#sidebar-add-comment-btn');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => promptForCommentOnSelection());
+    }
     return;
   }
 
-  // Render each comment as a simple card
   activeComments.forEach(([key, c]) => {
     const card = document.createElement('div');
     card.className = 'comment-card';
+    card.style.marginBottom = '12px';
+    card.style.borderRadius = '8px';
+    card.style.border = '1px solid #e0e0e0';
+    card.style.padding = '14px';
+    card.style.background = '#ffffff';
+    
     card.innerHTML = `
-      <div class="comment-header">
-        <span class="comment-author">You</span>
-        <span class="comment-date">${new Date().toLocaleDateString()}</span>
+      <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+        <span style="font-weight:500; color:#1f1f1f;">You</span>
+        <span style="color:#5f6368; font-size:12px;">${new Date().toLocaleDateString()}</span>
       </div>
-      <div class="comment-body">
-        <p style="font-style:italic; color:#5f6368; margin:0 0 6px 0;">“${c.quote}”</p>
-        <p style="margin:0 0 8px 0;">${c.body}</p>
-        <div style="display:flex; gap:8px;">
-          <button data-act="resolve" style="background:none;border:none;color:#1a73e8;cursor:pointer;font-size:12px;">Resolve</button>
-          <button data-act="delete" style="background:none;border:none;color:#ea4335;cursor:pointer;font-size:12px;">Delete</button>
-        </div>
+      <div style="font-style:italic; color:#5f6368; font-size:13px; margin-bottom:6px; background:#f8f9fa; padding:6px 8px; border-left:2px solid #dadce0;">
+        “${c.quote}”
+      </div>
+      <div style="font-size:14px; color:#1f1f1f; margin-bottom:10px;">${c.body}</div>
+      <div style="display:flex; gap:12px;">
+        <button data-act="resolve" style="background:none; border:none; color:#0b57d0; font-size:12px; font-weight:500; cursor:pointer;">Resolve</button>
+        <button data-act="delete" style="background:none; border:none; color:#ea4335; font-size:12px; font-weight:500; cursor:pointer;">Delete</button>
       </div>
     `;
 
     card.querySelector('[data-act="resolve"]').addEventListener('click', () => {
       c.resolved = true;
-      // remove anchor highlight (optional)
       document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => {
         el.className = 'comment-anchor resolved';
       });
-      renderCommentCards(); // re‑render
+      renderCommentCards();
     });
 
     card.querySelector('[data-act="delete"]').addEventListener('click', () => {
-      // remove anchor and delete comment
       document.querySelectorAll(`span[data-comment-id="${c.id}"]`).forEach(el => {
         el.replaceWith(...el.childNodes);
       });
@@ -252,10 +278,6 @@ function renderCommentCards() {
 
     sidebarList.appendChild(card);
   });
-
-  // Remove the floating margin container (we're only using the sidebar now)
-  const marginContainer = document.getElementById('margin-comments-container');
-  if (marginContainer) marginContainer.remove();
 }
 
   // ------------------------------
