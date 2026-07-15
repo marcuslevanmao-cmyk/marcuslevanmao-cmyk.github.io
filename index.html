@@ -152,52 +152,46 @@
     </div>
   </main>
 
-  <!-- Comments sidebar – now a flex child, not absolute -->
-  <aside class="comments-sidebar" id="comments-sidebar" hidden>
-    <!-- Keep all the existing inner HTML: cs-header, cs-tabs, cs-search, cs-content, cs-footer -->
-    <!-- Make sure the cs-content contains <div class="comments-list" id="comments-list"></div> -->
-
-
-    <!-- Comments sidebar (overlay) -->
-    <aside class="comments-sidebar" id="comments-sidebar" hidden>
-      <div class="cs-header">
-        <h3>Comments</h3>
-        <div class="cs-header-icons">
-          <button class="icon-btn" title="Notifications">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </button>
-          <button class="icon-btn" id="close-comments-btn" title="Close comments">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div class="cs-tabs">
-        <div class="cs-tab active">All comments</div>
-        <div class="cs-tab">For you</div>
-      </div>
-      <div class="cs-search">
-        <input type="text" placeholder="Search comments" />
-        <div class="cs-filters">
-          <button class="filter-btn">All types ▾</button>
-          <button class="filter-btn">All tabs ▾</button>
-        </div>
-      </div>
-      <div class="cs-content" id="cs-content">
-        <div class="comments-list" id="comments-list"></div>
-      </div>
-      <div class="cs-footer">
-        <p>Who sees comments? Your comments will be seen by anyone who can comment or edit this document. <a href="#">Learn more</a></p>
-      </div>
-    </aside>
+ <!-- Google Docs Style Comments Sidebar -->
+<aside class="docs-sidebar" id="docs-sidebar" hidden>
+  <!-- Header -->
+  <div class="sidebar-header">
+    <h3>Comments</h3>
+    <div class="header-icons">
+      <button class="icon-btn" id="close-comments-btn" title="Close comments">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
   </div>
-</div>
-  </aside>
-</div>
+
+  <!-- Tabs -->
+  <div class="sidebar-tabs">
+    <div class="tab active">All comments</div>
+    <div class="tab">For you</div>
+  </div>
+
+  <!-- Filters -->
+  <div class="sidebar-filters">
+    <button class="filter-btn">All types <span class="dropdown-arrow">▾</span></button>
+    <button class="filter-btn">All tabs <span class="dropdown-arrow">▾</span></button>
+  </div>
+
+  <!-- Comments List (populated by JavaScript) -->
+  <div class="sidebar-content" id="comments-list">
+    <div class="empty-state">
+      <p>Start a discussion</p>
+      <button class="primary-add-btn" id="sidebar-add-comment-btn">Add comment</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <p><strong>Who sees comments?</strong><br>
+    Your comments will be seen by anyone who can comment or edit this document. <a href="#">Learn more</a></p>
+  </div>
+</aside>
 <!-- ===== VERSION HISTORY OVERLAY ===== -->
 <div id="version-history-view" hidden>
   <div style="display:flex; flex-direction:column; height:100vh;">
