@@ -67,7 +67,6 @@
         .doc-page * {
             caret-color: #202124;
         }
-        /* Thin cursor via caret-color + contenteditable default */
         .doc-page:focus {
             outline: none;
         }
@@ -364,7 +363,7 @@
             line-height: 1.4;
         }
 
-        /* Comments Sidebar Container */
+        /* Comments Sidebar Container — FIXED */
         .docs-sidebar {
             flex: 0 0 360px;
             width: 360px;
@@ -373,7 +372,7 @@
             border-left: 1px solid #dadce0;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            overflow: hidden;
             z-index: 1000;
             position: relative;
             font-family: Arial, sans-serif;
@@ -388,13 +387,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px 0;
-            border-bottom: none;
+            padding: 12px 20px 8px;
+            border-bottom: 1px solid #dadce0;
             letter-spacing: 0;
             text-transform: none;
             font-size: 18px;
             color: #1f1f1f;
             height: 56px;
+            flex-shrink: 0;
+            background: #f9fbfd;
         }
         .docs-sidebar .sidebar-header h3 {
             font-size: 18px;
@@ -419,6 +420,7 @@
             letter-spacing: 0;
             text-transform: none;
             color: #444746;
+            flex-shrink: 0;
         }
         .docs-sidebar .sidebar-tabs .tab {
             font-size: 14px;
@@ -439,6 +441,7 @@
             padding: 12px 20px;
             display: flex;
             gap: 8px;
+            flex-shrink: 0;
         }
         .docs-sidebar .filter-btn {
             background-color: white;
@@ -458,9 +461,10 @@
         }
 
         .docs-sidebar .sidebar-content {
-            flex-grow: 1;
+            flex: 1 1 auto;
             overflow-y: auto;
-            padding: 8px 20px 16px;
+            padding: 8px 16px 16px;
+            min-height: 0;
         }
         .docs-sidebar .sidebar-content .empty-state {
             display: flex;
@@ -492,12 +496,14 @@
         }
 
         .docs-sidebar .sidebar-footer {
-            padding: 20px;
+            padding: 16px 20px;
             font-size: 12px;
             color: #444746;
             text-align: center;
             line-height: 1.5;
             border-top: 1px solid #dadce0;
+            flex-shrink: 0;
+            background: #f9fbfd;
         }
         .docs-sidebar .sidebar-footer a {
             color: #0b57d0;
@@ -544,6 +550,11 @@
             font-size: 13px;
             font-weight: 500;
             flex-shrink: 0;
+        }
+        .docs-comment-avatar svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
         }
         .docs-comment-author {
             font-weight: 500;
@@ -848,8 +859,8 @@
         .vh-author-dot.marcus-green {
             background-color: #0f9d58 !important;
         }
-        .vh-item .vh-author-dot {
-            background-color: #0f9d58;
+        .vh-item .vh-author-dot.you-blue {
+            background-color: #1a73e8 !important;
         }
 
         /* ===== HEADER ===== */
@@ -998,6 +1009,11 @@
             justify-content: center;
             cursor: help;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        .anonymous-profile svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
         }
 
         /* ===== TOOLBAR ===== */
@@ -1424,6 +1440,10 @@
                 width: 28px;
                 height: 28px;
             }
+            .anonymous-profile svg {
+                width: 16px;
+                height: 16px;
+            }
             .icon-btn,
             .toolbar-btn {
                 width: 24px;
@@ -1442,6 +1462,13 @@
             }
             .canvas-scroll-container {
                 padding-top: 20px;
+            }
+            .docs-sidebar .sidebar-header {
+                height: 48px;
+                padding: 8px 16px;
+            }
+            .docs-sidebar .sidebar-header h3 {
+                font-size: 16px;
             }
         }
     </style>
@@ -1494,7 +1521,7 @@
                         Share
                     </button>
                     <div class="anonymous-profile" title="Anonymous Capybara">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
                         </svg>
                     </div>
@@ -2444,6 +2471,16 @@
                     const parsed = JSON.parse(stored);
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         parsed.forEach(v => { v.dateObj = new Date(v.dateObj); });
+                        // Ensure entries 1-8 are "Marcus Le Van Mao" (green), entries 9+ are "You" (blue)
+                        parsed.forEach(v => {
+                            if (v.id <= 8) {
+                                v.author = "Marcus Le Van Mao";
+                                v.authorColor = "#0f9d58";
+                            } else {
+                                v.author = "You";
+                                v.authorColor = "#1a73e8";
+                            }
+                        });
                         return parsed;
                     }
                 } catch (e) {
@@ -2462,6 +2499,16 @@
         }
 
         let currentHistory = loadHistoryFromStorage() || documentHistory.slice();
+        // Ensure the initial 8 are always Marcus, and any beyond are You
+        currentHistory.forEach(v => {
+            if (v.id <= 8) {
+                v.author = "Marcus Le Van Mao";
+                v.authorColor = "#0f9d58";
+            } else {
+                v.author = "You";
+                v.authorColor = "#1a73e8";
+            }
+        });
         saveHistoryToStorage(currentHistory);
 
         let selectedPreviewIndex = 0;
@@ -2490,13 +2537,17 @@
                     `${now.toLocaleString('en', { month: 'short' })} ${now.getDate()}, ${displayHour}:${mins} ${ampm}`;
                 const dayGroup = now.toLocaleString('en', { weekday: 'long' });
 
+                const newId = _nextId++;
+                // If this is beyond the first 8, it's "You" with blue
+                const isYou = newId > 8;
+
                 return {
-                    id: _nextId++,
+                    id: newId,
                     dateObj: now,
                     displayDate: displayDate,
                     dayGroup: dayGroup,
-                    author: "Marcus Le Van Mao",
-                    authorColor: "#0f9d58",
+                    author: isYou ? "You" : "Marcus Le Van Mao",
+                    authorColor: isYou ? "#1a73e8" : "#0f9d58",
                     description: description || "Edited",
                     tabsState: _getCurrentTabsState()
                 };
@@ -2574,14 +2625,15 @@
                 const item = document.createElement('div');
                 item.className = `vh-item ${isActive ? 'active' : ''}`;
                 item.dataset.id = version.id;
-                const dotColor = version.author === "Marcus Le Van Mao" ? "#0f9d58" : (version.authorColor || "#0f9d58");
+                const dotColor = version.authorColor || (version.id <= 8 ? "#0f9d58" : "#1a73e8");
+                const dotClass = version.id <= 8 ? 'marcus-green' : 'you-blue';
                 item.innerHTML = `
               <div class="vh-item-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
               <div class="vh-item-content">
                 <div class="vh-item-time">${version.displayDate}</div>
                 <div class="vh-item-subtitle">${version.description}</div>
                 <div class="vh-item-author-row">
-                  <div class="vh-author-dot" style="background-color: ${dotColor};"></div>
+                  <div class="vh-author-dot ${dotClass}" style="background-color: ${dotColor};"></div>
                   <span style="color: ${dotColor}; font-weight: 500;">${version.author}</span>
                 </div>
               </div>
@@ -2920,11 +2972,16 @@
                 popup.style.width = '340px';
                 popup.style.zIndex = '2500';
 
+                // Anonymous profile SVG (same as top-right)
+                const avatarSvg = `<svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                  </svg>`;
+
                 popup.innerHTML = `
               <div class="docs-hover-card" style="background:#fff; border:1px solid #dadce0; border-radius:8px; padding:16px; box-shadow:0 4px 16px rgba(0,0,0,0.15);">
                 <div class="card-header" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                  <div class="avatar" style="width:32px; height:32px; border-radius:50%; background-color:#1a73e8; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
-                    Y
+                  <div class="avatar" style="width:32px; height:32px; border-radius:50%; background-color:#d81b60; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
+                    ${avatarSvg}
                   </div>
                   <span class="user-name" style="font-size:14px; font-weight:500; color:#1f1f1f;">You</span>
                 </div>
@@ -3108,10 +3165,15 @@
                     card.className = 'docs-comment-card';
                     card.dataset.commentId = comment.id;
 
+                    // Use anonymous avatar SVG for "You" comments
+                    const avatarContent = comment.author === 'You' ?
+                        `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>` :
+                        comment.avatar || 'Y';
+
                     card.innerHTML = `
                 <div class="docs-comment-header">
-                  <div class="docs-comment-avatar" style="background-color: ${comment.author === 'You' ? '#1a73e8' : '#0f9d58'}">
-                    ${comment.avatar}
+                  <div class="docs-comment-avatar" style="background-color: ${comment.author === 'You' ? '#d81b60' : '#0f9d58'}">
+                    ${avatarContent}
                   </div>
                   <span class="docs-comment-author">${comment.author}</span>
                   <span class="docs-comment-time">${comment.date}, ${comment.time}</span>
