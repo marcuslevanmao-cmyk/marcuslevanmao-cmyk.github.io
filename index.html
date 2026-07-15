@@ -140,21 +140,22 @@
       <div class="tabs-list" id="tabs-container"></div>
     </aside>
 
-    <!-- Main canvas -->
-    <main class="workspace" id="workspace">
-      <div class="canvas-scroll-container" id="canvas-scroll-container">
-        <div class="doc-canvas" id="doc-canvas">
-          <div class="ruler">
-            <div class="ruler-track">
-              <div class="ruler-face"></div>
-              <div class="ruler-margin-marker" style="left:96px;"></div>
-              <div class="ruler-margin-marker" style="right:96px;"></div>
-            </div>
-          </div>
-          <div id="pages-container"></div>
-        </div>
+<div class="workspace-wrapper">
+  <!-- Main canvas -->
+  <main class="workspace" id="workspace">
+    <div class="canvas-scroll-container" id="canvas-scroll-container">
+      <div class="doc-canvas" id="doc-canvas">
+        <div class="ruler">…</div>
+        <div id="pages-container"></div>
       </div>
-    </main>
+    </div>
+  </main>
+
+  <!-- Comments sidebar – now a flex child, not absolute -->
+  <aside class="comments-sidebar" id="comments-sidebar" hidden>
+    <!-- Keep all the existing inner HTML: cs-header, cs-tabs, cs-search, cs-content, cs-footer -->
+    <!-- Make sure the cs-content contains <div class="comments-list" id="comments-list"></div> -->
+
 
     <!-- Comments sidebar (overlay) -->
     <aside class="comments-sidebar" id="comments-sidebar" hidden>
@@ -194,7 +195,8 @@
     </aside>
   </div>
 </div>
-
+  </aside>
+</div>
 <!-- ===== VERSION HISTORY OVERLAY ===== -->
 <div id="version-history-view" hidden>
   <div style="display:flex; flex-direction:column; height:100vh;">
