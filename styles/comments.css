@@ -147,3 +147,30 @@
 }
 .comment-floating-actions .btn-primary:hover { background: #1557b0; }
 .comment-floating-actions .btn-secondary:hover { background: rgba(0,0,0,0.04); }
+/* ---- Simpler comment card styles ---- */
+.comment-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+.comment-author {
+  font-weight: bold;
+  color: #333;
+}
+.comment-date {
+  color: #888;
+}
+.comment-body {
+  font-size: 0.95em;
+  color: #444;
+  line-height: 1.4;
+}
