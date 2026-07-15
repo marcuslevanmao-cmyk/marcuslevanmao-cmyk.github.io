@@ -443,14 +443,3 @@ const EditorEngine = (() => {
     getCombinedHtml
   };
 })();
-// ============================================================
-// SIMPLE COMMENT SYSTEM (integrated at user's request)
-// ============================================================
-
-// 1. Create an empty array to store our comments
-let documentComments = [];
-
-// ... [DELETE ALL THE WAY TO THE BOTTOM OF THE FILE] ...
-
-// We'll also expose renderComments globally so it can be called elsewhere
-window.renderComments = renderComments;
