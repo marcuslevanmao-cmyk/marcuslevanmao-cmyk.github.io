@@ -1,15 +1,21 @@
 /**
- * app.js — App Orchestrator
+ * app.js — App Orchestrator (Configured for Persistent Side Margin-track Setup)
  */
 document.addEventListener('DOMContentLoaded', () => {
   EditorEngine.renderTabsSidebar();
   EditorEngine.loadActiveTabContent();
   CommentsEngine.bindSelectionListener();
+  
+  // Initial sync display for loaded components
+  setTimeout(() => { CommentsEngine.renderCommentCards(); }, 100);
 
   // ----- Tab creation -----
-  document.getElementById('add-tab-btn')?.addEventListener('click', () => EditorEngine.createNewTab());
+  document.getElementById('add-tab-btn')?.addEventListener('click', () => {
+    EditorEngine.createNewTab();
+    CommentsEngine.renderCommentCards();
+  });
 
-  // ----- Toolbar actions -----
+  // ----- Toolbar formatting engines -----
   document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
@@ -28,21 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
         document.execCommand('hiliteColor', false, '#fff475');
         HistoryEngine.captureSnapshot('Highlight applied');
       }
+      CommentsEngine.saveCommentsToStorage();
     });
   });
 
-  // Font and style selectors
+  // Font adjustments
   document.querySelector('select[title="Font"]')?.addEventListener('change', (e) => {
     document.execCommand('fontName', false, e.target.value);
     HistoryEngine.captureSnapshot(`Font: ${e.target.value}`);
+    CommentsEngine.saveCommentsToStorage();
   });
+  
   document.querySelector('select[title="Styles"]')?.addEventListener('change', (e) => {
     const tags = { 'Heading 1': 'H1', 'Heading 2': 'H2', 'Heading 3': 'H3' };
     document.execCommand('formatBlock', false, tags[e.target.value] || 'p');
     HistoryEngine.captureSnapshot(`Style: ${e.target.value}`);
+    CommentsEngine.saveCommentsToStorage();
   });
 
-  // Font size buttons
+  // Size sizing systems
   const dec = document.getElementById('decrease-size-btn');
   const inc = document.getElementById('increase-size-btn');
   const sizeIn = document.querySelector('.font-size-input');
@@ -65,6 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           HistoryEngine.captureSnapshot(`Size: ${newSize}px`);
         }
+        CommentsEngine.saveCommentsToStorage();
+        CommentsEngine.renderCommentCards();
       }
     };
     dec.addEventListener('click', () => {
@@ -81,36 +93,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ----- Comment button in toolbar (opens composer for selection) -----
-  document.getElementById('add-comment-btn')?.addEventListener('click', () => CommentsEngine.promptForCommentOnSelection());
-
-  // ----- Floating comment button click -----
+  // ----- Comment Action triggers -----
+  document.getElementById('add-comment-btn')?.addEventListener('click', () => {
+    CommentsEngine.promptForCommentOnSelection();
+  });
+  document.getElementById('comment-btn')?.addEventListener('click', () => {
+    CommentsEngine.promptForCommentOnSelection();
+  });
   document.getElementById('floating-comment-btn')?.addEventListener('click', () => {
     CommentsEngine.promptForCommentOnSelection();
   });
 
-  // ----- Toggle comments sidebar -----
-  const commentBtn = document.getElementById('comment-btn');
-  const commentsSidebar = document.getElementById('docs-sidebar');
-  const closeComments = document.getElementById('close-comments-btn');
-  if (commentBtn && commentsSidebar) {
-    commentBtn.addEventListener('click', () => {
-      document.getElementById('version-history-view').hidden = true;
-      commentsSidebar.hidden = !commentsSidebar.hidden;
-      if (!commentsSidebar.hidden) CommentsEngine.renderCommentCards();
-    });
-  }
-  if (closeComments && commentsSidebar) {
-    closeComments.addEventListener('click', () => { commentsSidebar.hidden = true; });
-  }
+  // Ensure layouts recalculate if user shifts window scales
+  window.addEventListener('resize', () => {
+    CommentsEngine.renderCommentCards();
+  });
 
-  // ----- Version history -----
+  // Track document edits to update alignment positions
+  document.getElementById('pages-container')?.addEventListener('input', () => {
+    CommentsEngine.saveCommentsToStorage();
+    CommentsEngine.renderCommentCards();
+  });
+
+  // ----- Version History Workspace Overlays -----
   const historyBtn = document.getElementById('history-btn');
   const vhOverlay = document.getElementById('version-history-view');
   const vhBack = document.getElementById('vh-back-btn');
   if (historyBtn && vhOverlay) {
     historyBtn.addEventListener('click', () => {
-      if (commentsSidebar) commentsSidebar.hidden = true;
       vhOverlay.hidden = false;
       renderHistorySidebar();
       HistoryEngine.previewSnapshot(0);
@@ -120,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vhBack.addEventListener('click', () => { vhOverlay.hidden = true; });
   }
 
-  // ----- Restore modal -----
+  // Restore dialogs
   const confirmModal = document.getElementById('confirm-modal');
   const restoreBtn = document.getElementById('vh-restore-trigger-btn');
   const cancelBtn = document.getElementById('modal-cancel-btn');
@@ -137,21 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (idx !== -1) HistoryEngine.rollbackTo(idx);
       confirmModal.hidden = true;
       vhOverlay.hidden = true;
+      localStorage.removeItem('docs_margin_comments'); // clear stale anchors
+      location.reload();
     });
   }
-
-  // ─── FIXED: Click‑outside whitelists floating composers and buttons ───
-  document.addEventListener('click', (e) => {
-    if (commentsSidebar && !commentsSidebar.hidden) {
-      const isCommentBtn = e.target.closest('#comment-btn');
-      const isSidebar = e.target.closest('#docs-sidebar');
-      const isFloatingComposer = e.target.closest('.comment-floating-composer');
-      const isToolbarCommentBtn = e.target.closest('#add-comment-btn');
-      const isFloatingCommentBtn = e.target.closest('#floating-comment-btn');
-      
-      if (!isCommentBtn && !isSidebar && !isFloatingComposer && !isToolbarCommentBtn && !isFloatingCommentBtn) {
-        commentsSidebar.hidden = true;
-      }
-    }
-  });
 });
